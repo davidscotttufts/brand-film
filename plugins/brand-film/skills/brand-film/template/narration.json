@@ -1,0 +1,67 @@
+{
+ "$comment": "The voice-over: one take per scene. `text` is the line as WRITTEN (\"17 weeks\", \"example.com\"); the brand's pronunciation lexicon (brand-tokens.json brand.pronunciations) turns it into what the voice is sent, and the captions show the written forms. A take may instead give `speak`, sent exactly as written. Each take starts at `at` and must finish before `until`, in FILM seconds (after inserts). `scene` says what is on screen; `anchors` are words that should land while their picture shows (reported by npm run narrate, not enforced). `verify` sets the listening check (speech-to-text): the most word error a take may have and how many times to re-voice a take that fails. `timing` is 'tts' (the voice's own timestamps) or 'forced-alignment' (re-aligned against the text). The narrator comes from brand-tokens.json video.voice.narrator; `voice` here is only the fallback. `auditions` lists voices for npm run audition. Eleven v3/v4 reject a seed, so seed is null.",
+ "model": "eleven_v4",
+ "voice": {
+  "id": "",
+  "name": ""
+ },
+ "auditions": [],
+ "voiceSettings": {
+  "stability": 0.5,
+  "similarity_boost": 0.8
+ },
+ "outputFormat": "mp3_44100_128",
+ "seed": null,
+ "verify": {
+  "enabled": true,
+  "model": "scribe_v1",
+  "maxWer": 0.15,
+  "attempts": 3
+ },
+ "timing": "tts",
+ "captionReplace": {},
+ "takes": [
+  {
+   "id": "a-open",
+   "at": 0.8,
+   "until": 5.6,
+   "scene": "accent card: logo, Our story",
+   "text": "This is the story of how one team learned to ship faster."
+  },
+  {
+   "id": "b-start",
+   "at": 6.2,
+   "until": 14.0,
+   "scene": "four team tiles land, each with its own backlog",
+   "text": "Two years ago, four product teams each worked their own backlog.",
+   "anchors": [
+    {
+     "word": "four",
+     "from": 8.6,
+     "to": 9.6
+    }
+   ]
+  },
+  {
+   "id": "c-result",
+   "at": 14.6,
+   "until": 21.6,
+   "scene": "a counter climbs to 17 weeks; a short accent bar against a long gray one",
+   "text": "This year, our first builder pod shipped in 17 weeks.",
+   "anchors": [
+    {
+     "word": "seventeen",
+     "from": 17.0,
+     "to": 18.6
+    }
+   ]
+  },
+  {
+   "id": "l-end",
+   "at": 22.2,
+   "until": 25.6,
+   "scene": "paper end card: Ship faster, one sentence, the URL",
+   "text": "Ship faster. Find out how at example.com."
+  }
+ ]
+}

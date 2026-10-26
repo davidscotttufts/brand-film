@@ -1,0 +1,32 @@
+{
+  "$description": "The example film's design system: the neutral default identity, plus this film's pronunciation lexicon. Every key not written here is inherited from default-tokens.json.",
+  "brand": {
+    "name": "brand-film",
+    "sources": [
+      "This repository (README.md, the skill and its template)"
+    ],
+    "pronunciations": [
+      {
+        "written": "brand-film",
+        "spoken": "brand film"
+      },
+      {
+        "written": "ElevenLabs",
+        "spoken": "Eleven Labs"
+      },
+      {
+        "written": "ffmpeg",
+        "spoken": "eff eff em peg"
+      },
+      {
+        "written": "HTML",
+        "spoken": "H T M L",
+        "caseSensitive": true
+      },
+      {
+        "written": "GitHub",
+        "spoken": "Git Hub"
+      }
+    ]
+  }
+}

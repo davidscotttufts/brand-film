@@ -1,0 +1,28 @@
+/* brand-film film tokens. Generated from brand-tokens.json by `npm run tokens`; do not edit. */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+:root {
+  --video-stage: #15171b;
+  --video-stage-text: #f3f2ef;
+  --video-stage-muted: #a4a8af;
+  --video-stage-rule: #3e434b;
+  --video-card: #f6f5f2;
+  --video-card-text: #15171b;
+  --video-card-muted: #4b5059;
+  --video-card-faint: #5e636c;
+  --video-accent: oklch(60% 0.12 235);
+  --video-accent-on-stage: oklch(76% 0.11 235);
+  --video-accent-on-card: oklch(47% 0.13 235);
+  --video-font-headline: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --video-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --video-font-label: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --video-size-opening-line: 120px;
+  --video-size-scene-title: 76px;
+  --video-size-end-card-line: 160px;
+  --video-size-body-min: 23px;
+  --video-size-body-max: 36px;
+  --video-size-mono-label-min: 20px;
+  --video-size-mono-label-max: 26px;
+  --video-size-readable-floor: 20px;
+  --video-margin: 160px;
+  --video-reveal: 0.4s;
+}

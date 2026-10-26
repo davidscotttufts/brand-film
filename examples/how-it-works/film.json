@@ -1,0 +1,10 @@
+{
+  "$comment": "Which scene this folder renders and what it writes. `basename` names the outputs: out/<basename>.mp4, out/<basename>-poster.jpg, out/<basename>.en.vtt. `source` is the document every on-screen fact comes from (a deck, a page, a report); `facts` are strings that must appear in BOTH that source's text and the scene, checked by `npm run render` so a film never shows a number its source no longer says. Leave `facts` empty to skip the check.",
+  "scene": "scene.html",
+  "basename": "how-it-works",
+  "source": "SOURCE.md",
+  "facts": [
+    "1,440 frames",
+    "-16 LUFS"
+  ]
+}

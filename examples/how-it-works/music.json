@@ -1,0 +1,8 @@
+{
+ "$comment": "The score, composed by ElevenLabs music (`npm run music`), instrumental, cached in music/. The default is no music (silence is the default; music only when it serves the film), so `use` starts false; a brand film that wants a score sets it true. render.mjs sets the score at `levelDb`, fades it in and out, and ducks it under the narrator. Make lengthMs about 1 s longer than the film's DURATION, and recompose whenever the length changes so it resolves on the end card.",
+ "use": true,
+ "model": "music_v2_5",
+ "lengthMs": 49000,
+ "levelDb": -11,
+ "prompt": "Calm, precise modern underscore for a short software explainer. Soft felt piano and a gentle pulsing analog synth arpeggio, light glassy textures, around 92 BPM. Starts sparse and curious, adds a soft kick and brushed percussion from the midpoint as the idea comes together, and resolves on a warm, settled final chord in the last 6 seconds. Instrumental only, no vocals, leave space for a narrator."
+}

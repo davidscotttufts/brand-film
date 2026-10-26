@@ -1,0 +1,142 @@
+{
+  "$description": "The default film identity: neutral and fully specified, so a scaffolded film renders before any brand work and any key a brand leaves out has a sound value. A brand film writes its own brand-tokens.json over it (references/brand-system.md); `npm run tokens` merges the two and lists every key it inherited from here.",
+  "brand": {
+    "name": "Default",
+    "sources": [
+      "brand-film default identity (neutral; replace with the brand's own sources)"
+    ],
+    "fontsHref": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+    "fontFiles": [],
+    "substitutions": {},
+    "logo": {
+      "onStage": "assets/logo-on-stage.svg",
+      "onCard": "assets/logo-on-card.svg",
+      "widthPx": 120,
+      "rule": "Use the brand's supplied files. Never redraw, recolour or crop a mark; no logo means the brand name set in the headline face. The default files are a neutral placeholder mark."
+    },
+    "signature": {
+      "openingCard": "Stage (ink) ground, a two-line headline in the headline face at openingLine size, one accent word (accent-on-stage). Complete from frame 0.",
+      "sceneLabel": "Numbered mono label, '01 \u00b7 where we started', in stage-muted with the number in accent-on-stage.",
+      "sceneTitle": "One line at sceneTitle size; at most one accent word or phrase.",
+      "proof": "Pictures first. A command card or screenshot may appear, small, as evidence; anything shown as output is real output.",
+      "endCard": "Card (paper) ground: one line at endCardLine size, one sentence, the page URL."
+    },
+    "pronunciations": []
+  },
+  "video": {
+    "canvas": {
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "marginLeftPx": 160
+    },
+    "type": {
+      "headline": "sans",
+      "body": "sans",
+      "label": "mono",
+      "sizesPxAt1080p": {
+        "openingLine": 120,
+        "sceneTitle": 76,
+        "endCardLine": 160,
+        "bodyMin": 23,
+        "bodyMax": 36,
+        "monoLabelMin": 20,
+        "monoLabelMax": 26,
+        "readableFloor": 20
+      }
+    },
+    "story": {
+      "durationSecondsMin": 45,
+      "durationSecondsMax": 75,
+      "beats": [
+        "problem",
+        "stakes",
+        "turn",
+        "proof",
+        "payoff"
+      ]
+    },
+    "voice": {
+      "maxWordsPerSentence": 18,
+      "narrator": {
+        "provider": "ElevenLabs",
+        "model": "eleven_v4",
+        "voiceName": "Christopher - Smooth, calm and very English",
+        "voiceId": "G17SuINrv2H9FC6nvetn",
+        "source": "ElevenLabs Voice Library (add it to your account, or pick your own with npm run audition)"
+      }
+    },
+    "motion": {
+      "revealMsMin": 400,
+      "revealMsMax": 800,
+      "primaryMovementsAtOnce": 1
+    },
+    "sound": {
+      "narrationLufs": -16,
+      "ceilingDbtp": -1.5,
+      "effectsBelowVoiceDb": 12,
+      "effects": [
+        "tick",
+        "sweep",
+        "chime",
+        "refuse",
+        "wait",
+        "pop"
+      ],
+      "musicDefault": "none"
+    },
+    "accessibility": {
+      "minTextContrast": 4.5,
+      "captions": "required",
+      "autoplay": false
+    },
+    "color": {
+      "stage": "#15171b",
+      "stage-text": "#f3f2ef",
+      "stage-muted": "#a4a8af",
+      "stage-rule": "#3e434b",
+      "card": "#f6f5f2",
+      "card-text": "#15171b",
+      "card-muted": "#4b5059",
+      "card-faint": "#5e636c",
+      "accent": "oklch(60% 0.12 235)",
+      "accent-on-stage": "oklch(76% 0.11 235)",
+      "accent-on-card": "oklch(47% 0.13 235)"
+    },
+    "fontFamily": {
+      "headline": "\"Space Grotesk\", ui-sans-serif, system-ui, sans-serif",
+      "body": "\"Inter\", ui-sans-serif, system-ui, sans-serif",
+      "label": "\"JetBrains Mono\", ui-monospace, \"SF Mono\", Menlo, monospace"
+    }
+  },
+  "contrast": [
+    [
+      "stage-text",
+      "stage"
+    ],
+    [
+      "stage-muted",
+      "stage"
+    ],
+    [
+      "accent-on-stage",
+      "stage"
+    ],
+    [
+      "card-text",
+      "card"
+    ],
+    [
+      "card-muted",
+      "card"
+    ],
+    [
+      "card-faint",
+      "card"
+    ],
+    [
+      "accent-on-card",
+      "card"
+    ]
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "name": "brand-film",
+  "private": true,
+  "type": "module",
+  "description": "A narrated brand film: an HTML scene that is a pure function of time, rendered frame by frame in headless Chrome, with ElevenLabs narration (checked by speech-to-text) and music, and ffmpeg-synthesized sound effects. Scaffolded by the brand-film skill.",
+  "scripts": {
+    "doctor": "node doctor.mjs",
+    "tokens": "node tokens.mjs",
+    "lint": "node lint.mjs",
+    "narrate": "node narrate.mjs",
+    "audition": "node narrate.mjs --audition",
+    "music": "node music.mjs",
+    "sfx": "node sfx.mjs",
+    "preview": "node preview.mjs",
+    "sheet": "node preview.mjs --sheet",
+    "render": "node render.mjs",
+    "build": "node tokens.mjs && node lint.mjs && node narrate.mjs && node music.mjs && node sfx.mjs && node render.mjs"
+  },
+  "devDependencies": {
+    "ffmpeg-static": "^5.2.0",
+    "playwright-core": "^1.55.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,95 @@
+{
+ "$comment": "The voice-over: one take per scene. `text` is the line as WRITTEN (\"17 weeks\", \"example.com\"); the brand's pronunciation lexicon (brand-tokens.json brand.pronunciations) turns it into what the voice is sent, and the captions show the written forms. A take may instead give `speak`, sent exactly as written. Each take starts at `at` and must finish before `until`, in FILM seconds (after inserts). `scene` says what is on screen; `anchors` are words that should land while their picture shows (reported by npm run narrate, not enforced). `verify` sets the listening check (speech-to-text): the most word error a take may have and how many times to re-voice a take that fails. `timing` is 'tts' (the voice's own timestamps) or 'forced-alignment' (re-aligned against the text). The narrator comes from brand-tokens.json video.voice.narrator; `voice` here is only the fallback. `auditions` lists voices for npm run audition. Eleven v3/v4 reject a seed, so seed is null.",
+ "model": "eleven_v4",
+ "voice": {
+  "id": "",
+  "name": ""
+ },
+ "auditions": [],
+ "voiceSettings": {
+  "stability": 0.5,
+  "similarity_boost": 0.8
+ },
+ "outputFormat": "mp3_44100_128",
+ "seed": null,
+ "verify": {
+  "enabled": true,
+  "model": "scribe_v1",
+  "maxWer": 0.15,
+  "attempts": 3
+ },
+ "timing": "tts",
+ "captionReplace": {},
+ "takes": [
+  {
+   "id": "a-open",
+   "at": 0.8,
+   "until": 5.4,
+   "scene": "opening card: Brand films, made in code",
+   "text": "This film was made by a script, not an editor."
+  },
+  {
+   "id": "b-drift",
+   "at": 6.2,
+   "until": 13.2,
+   "scene": "six weeks of edits stack up; the brand swatches drift",
+   "text": "Explainer videos take weeks of edits, and the brand drifts with every one.",
+   "anchors": [
+    {
+     "word": "drifts",
+     "from": 9.4,
+     "to": 10.6
+    }
+   ]
+  },
+  {
+   "id": "c-frame",
+   "at": 14.0,
+   "until": 21.6,
+   "scene": "render(t): a code card scrubs time and the picture follows",
+   "text": "brand-film writes the film as an HTML scene, where every frame is a function of time.",
+   "anchors": [
+    {
+     "word": "frame",
+     "from": 17.5,
+     "to": 20.5
+    }
+   ]
+  },
+  {
+   "id": "d-voice",
+   "at": 22.8,
+   "until": 30.8,
+   "scene": "three takes: waveform, transcript, term chips checked",
+   "text": "ElevenLabs voices each line, then listens back to check every name was said right.",
+   "anchors": [
+    {
+     "word": "listens",
+     "from": 25.0,
+     "to": 26.4
+    }
+   ]
+  },
+  {
+   "id": "e-render",
+   "at": 32.0,
+   "until": 40.0,
+   "scene": "frame strip fills; 1,440 frames, -16 LUFS, captions",
+   "text": "Headless Chrome renders each frame, and ffmpeg mixes the voice, music and captions.",
+   "anchors": [
+    {
+     "word": "renders",
+     "from": 32.6,
+     "to": 35.0
+    }
+   ]
+  },
+  {
+   "id": "l-end",
+   "at": 41.0,
+   "until": 47.2,
+   "scene": "paper end card: Make the film in code; the GitHub URL",
+   "text": "Your brand, your story, made in code. Find brand-film on GitHub."
+  }
+ ]
+}

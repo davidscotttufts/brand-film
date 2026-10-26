@@ -1,0 +1,13 @@
+# Generated. The audio is never committed: narration/manifest.json (word
+# timings), takes.lock.json and music.lock.json record how it was made, and a
+# render without it is silent but keeps its captions.
+node_modules/
+out/
+preview/
+auditions/
+brand-tokens.resolved.json
+narration/*.mp3
+narration/*.verify.json
+music/*.mp3
+.env
+sfx/*.wav

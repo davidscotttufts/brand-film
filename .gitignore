@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+.env
+*.mp4
+*.mp3
+*.wav
+**/out/
+**/preview/
+**/auditions/
+**/brand-tokens.resolved.json
+**/narration/*.verify.json
+_site/

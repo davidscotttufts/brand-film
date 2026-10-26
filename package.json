@@ -1,0 +1,12 @@
+{
+  "name": "brand-film-repo",
+  "private": true,
+  "type": "module",
+  "description": "Development scripts for the brand-film repository. The skill and its film template live in plugins/brand-film.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:render": "bash scripts/test-render.sh",
+    "sync-example": "node scripts/sync-example.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

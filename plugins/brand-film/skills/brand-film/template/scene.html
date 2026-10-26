@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example film</title>
+<!-- The film, as a scene. Every frame is a pure function of time: render.mjs
+     calls window.render(t) once per frame, and ?t=12.5 renders one moment
+     (open the file in a browser; with no ?t it plays on a loop). Cue times
+     come from the voiced words in narration/manifest.json. Look: only the
+     var(--video-*) tokens in brand-tokens.css (npm run tokens), never a hex,
+     so a rebrand is a token change. The default identity (default-tokens.json):
+     ink stage, two-line opening card, numbered mono scene label, paper end
+     card with the page URL. Every fact on screen comes from
+     film.json `source`. -->
+<link rel="stylesheet" href="brand-tokens.css">
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--video-stage);
+           font-family: var(--video-font-body); color: var(--video-stage-text); }
+  #stage em { font-style: normal; color: var(--video-accent-on-stage); }
+  .abs { position: absolute; }
+  .sec { inset: 0; }
+  .label { left: var(--video-margin); top: 108px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max);
+           letter-spacing: 0.04em; color: var(--video-stage-muted); display: flex; gap: 18px; }
+  .label b { color: var(--video-accent-on-stage); font-weight: 500; }
+  .title { left: var(--video-margin); top: 150px; font-family: var(--video-font-headline); font-size: var(--video-size-scene-title);
+           font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .card { box-sizing: border-box; background: var(--video-card); color: var(--video-card-text); border-radius: 18px; }
+  .big { font-family: var(--video-font-headline); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+
+  /* A: opening card, on the stage */
+  #sA { inset: 0; background: var(--video-stage); }
+  #sA img { position: absolute; left: var(--video-margin); top: 110px; width: 120px; }
+  #sA .hl { position: absolute; left: var(--video-margin); font-family: var(--video-font-headline); font-size: var(--video-size-opening-line);
+            font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+
+  /* B: the problem */
+  .team { top: 380px; width: 360px; height: 280px; padding: 30px; }
+  .team h3 { margin: 0 0 24px; font-size: 32px; font-weight: 600; }
+  .team i { display: block; height: 20px; border-radius: 6px; background: var(--video-card-faint); opacity: .35; margin-bottom: 14px; }
+
+  /* C: the proof */
+  #num { left: var(--video-margin); top: 400px; font-size: 220px; color: var(--video-accent-on-stage); }
+  #numK { left: calc(var(--video-margin) + 8px); top: 650px; font-size: var(--video-size-body-max); color: var(--video-stage-muted); }
+  .bar { left: var(--video-margin); height: 56px; border-radius: 10px; }
+  .barK { left: var(--video-margin); font-family: var(--video-font-label); font-size: var(--video-size-mono-label-min); color: var(--video-stage-muted); }
+
+  /* L: end card, on paper */
+  #sL { inset: 0; background: var(--video-card); color: var(--video-card-text); }
+  #sL img { position: absolute; left: var(--video-margin); top: 110px; width: 120px; }
+  #sL .hl { position: absolute; left: var(--video-margin); top: 360px; font-family: var(--video-font-headline);
+            font-size: var(--video-size-end-card-line); font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  #sL .hl em { color: var(--video-accent-on-card); }
+  #sL .sub { position: absolute; left: var(--video-margin); top: 590px; font-size: var(--video-size-body-max); color: var(--video-card-muted); }
+  #sL .url { position: absolute; left: var(--video-margin); top: 680px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max); color: var(--video-card-muted); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- B: the problem -->
+  <div class="abs sec" id="sB">
+    <div class="abs label"><b>01</b><span>· where we started</span></div>
+    <div class="abs title">Four teams, <em>four backlogs.</em></div>
+    <div id="teams"></div>
+  </div>
+
+  <!-- C: the proof -->
+  <div class="abs sec" id="sC">
+    <div class="abs label"><b>02</b><span>· what changed</span></div>
+    <div class="abs title">Shipped in <em>17 weeks.</em></div>
+    <div class="abs big" id="num">0</div>
+    <div class="abs" id="numK">weeks from idea to production</div>
+    <div class="abs barK" style="top:760px">this project</div>
+    <div class="abs bar" id="barNew" style="top:790px;background:var(--video-accent)"></div>
+    <div class="abs barK" style="top:872px">a typical project</div>
+    <div class="abs bar" id="barOld" style="top:902px;background:var(--video-stage-rule)"></div>
+  </div>
+
+  <!-- A: opening card (late in the DOM so it covers the stage until it fades) -->
+  <div class="abs" id="sA">
+    <img src="assets/logo-on-stage.svg" alt="Logo">
+    <div class="hl" style="top:420px">One team learned</div>
+    <div class="hl" style="top:560px">to ship <em>faster.</em></div>
+  </div>
+
+  <!-- L: end card -->
+  <div class="abs" id="sL">
+    <img src="assets/logo-on-card.svg" alt="Logo">
+    <div class="hl" id="lH">Ship <em>faster.</em></div>
+    <div class="sub" id="lSub">One idea, told in under a minute.</div>
+    <div class="url" id="lUrl">example.com</div>
+  </div>
+</div>
+
+<script>
+const DURATION = 26.0;
+const FPS = 30;
+const POSTER_T = 2.0; // the opening card: players and Slides use the first frames as the thumbnail
+
+// On-screen captions, used only when the film renders without narration.
+const CAPTIONS = [
+  [0.8, 5.2, 'This is the story of how one team learned to ship faster.'],
+  [6.2, 13.6, 'Two years ago, four product teams each worked their own backlog.'],
+  [14.6, 21.4, 'This year, our first builder pod shipped in 17 weeks.'],
+  [22.2, 25.4, 'Ship faster.'],
+];
+
+const TEAMS = ['Ordering', 'Mobile', 'Search', 'Payments'];
+// Cue times: copy them from narration/manifest.json word starts (e.g. "four" at 8.9s).
+const teamT = (i) => 8.9 + i * 0.45;
+
+// [seconds, effect, gainDb?]: every cue has something visible changing at that moment.
+const SFX = [
+  [0.3, 'sweep'], [1.2, 'chime', -22],
+  [5.8, 'sweep'], ...TEAMS.map((_, i) => [teamT(i), 'pop']),
+  [14.2, 'sweep'], ...Array.from({ length: 12 }, (_, i) => [17.2 + i * 0.12, 'tick', -30]), [18.8, 'chime'],
+  [21.8, 'sweep'], [22.4, 'chime', -20],
+];
+
+// Inserted scenes. To add a scene without re-timing everything after it, add
+// { at, d, f } here: at base time `at` the base timeline holds still for `d`
+// seconds while f(localTime) draws the insert, and every later scene plays d
+// seconds late. Base-timeline cues and captions shift through toFilm(); an
+// insert's own cues go in at insStart(k) + local time. narration.json
+// `at`/`until` are always FILM times (after inserts).
+const INSERTS = [
+  // { at: 14.2, d: 6.0, f: (l) => renderMyInsert(l) },
+];
+const toFilm = (b) => b + INSERTS.reduce((s, i) => s + (i.at <= b ? i.d : 0), 0);
+const insStart = (k) => INSERTS[k].at + INSERTS.slice(0, k).reduce((s, i) => s + i.d, 0);
+for (const cue of SFX) cue[0] = toFilm(cue[0]);
+for (const c of CAPTIONS) { c[1] = Math.min(toFilm(c[1] - 0.01), toFilm(c[0]) + (c[1] - c[0])); c[0] = toFilm(c[0]); }
+SFX.sort((a, b) => a[0] - b[0]);
+
+const $ = (id) => document.getElementById(id);
+const clamp = (v) => Math.max(0, Math.min(1, v));
+const ease = (v) => { v = clamp(v); return v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2; };
+const ramp = (t, a, b) => ease((t - a) / (b - a));
+const win = (t, a, b, c, d) => Math.min(ramp(t, a, b), 1 - ramp(t, c, d));
+const lerp = (a, b, k) => a + (b - a) * k;
+function setO(el, o, dy = 0) {
+  el.style.opacity = o.toFixed(3);
+  el.style.transform = dy ? `translateY(${(dy * (1 - o)).toFixed(1)}px)` : '';
+  el.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+}
+
+// Built once.
+$('teams').innerHTML = TEAMS.map((n, i) =>
+  `<div class="abs card team" id="tm${i}" style="left:${160 + i * 413}px"><h3>${n}</h3>${'<i></i>'.repeat(4)}</div>`).join('');
+
+function renderBase(t) {
+  // A: the opening card is complete from frame 0 (it is the thumbnail), then fades.
+  setO($('sA'), 1 - ramp(t, 5.2, 6.0));
+
+  // B: four teams land on "four".
+  setO($('sB'), win(t, 5.6, 6.2, 13.6, 14.2));
+  TEAMS.forEach((_, i) => setO($('tm' + i), ramp(t, teamT(i), teamT(i) + 0.5), 40));
+
+  // C: the number counts up as it is said; the bars compare it to the usual.
+  setO($('sC'), win(t, 14.2, 14.8, 21.2, 21.8));
+  setO($('num'), ramp(t, 16.8, 17.2), 30);
+  $('num').textContent = Math.round(17 * ramp(t, 17.2, 18.6));
+  setO($('numK'), ramp(t, 18.6, 19.1), 16);
+  $('barNew').style.width = (1600 * 17 / 52 * ramp(t, 19.0, 19.8)) + 'px';
+  $('barOld').style.width = (1600 * ramp(t, 19.6, 20.6)) + 'px';
+
+  // L: end card.
+  setO($('sL'), ramp(t, 21.8, 22.4));
+  setO($('lH'), ramp(t, 22.4, 23.2), 40);
+  setO($('lSub'), ramp(t, 23.2, 24.0), 20);
+  setO($('lUrl'), ramp(t, 23.6, 24.2), 10);
+}
+
+const SCENES_IN = []; // ids of insert scenes, hidden unless their insert is playing
+function render(t) {
+  for (const id of SCENES_IN) setO($(id), 0);
+  let off = 0;
+  for (const ins of INSERTS) {
+    const s = ins.at + off;
+    if (t < s) break;
+    if (t < s + ins.d) { renderBase(ins.at); ins.f(t - s); return; }
+    off += ins.d;
+  }
+  renderBase(t - off);
+}
+
+window.DURATION = DURATION;
+window.FPS = FPS;
+window.CAPTIONS = CAPTIONS;
+window.POSTER_T = POSTER_T;
+window.SFX = SFX;
+window.render = render;
+const q = new URLSearchParams(location.search).get('t');
+if (q !== null) render(parseFloat(q));
+else { const t0 = performance.now(); (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>

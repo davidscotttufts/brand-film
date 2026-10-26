@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>brand-film · How it works</title>
+<!-- The example film: brand-film explaining itself in 48 seconds. Every frame
+     is a pure function of time (window.render(t)); ?t=12.5 renders one moment.
+     Only var(--video-*) tokens from brand-tokens.css, never a hex. Cue times
+     are copied from the voiced words in narration/manifest.json. Every fact on
+     screen is in SOURCE.md. -->
+<link rel="stylesheet" href="brand-tokens.css">
+<style>
+  html, body { margin: 0; background: #000; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--video-stage);
+           font-family: var(--video-font-body); color: var(--video-stage-text); }
+  #stage em { font-style: normal; color: var(--video-accent-on-stage); }
+  .abs { position: absolute; }
+  .sec { inset: 0; }
+  .label { left: var(--video-margin); top: 108px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max);
+           letter-spacing: 0.04em; color: var(--video-stage-muted); display: flex; gap: 18px; }
+  .label b { color: var(--video-accent-on-stage); font-weight: 500; }
+  .title { left: var(--video-margin); top: 150px; font-family: var(--video-font-headline); font-size: var(--video-size-scene-title);
+           font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; white-space: nowrap; }
+  .card { box-sizing: border-box; background: var(--video-card); color: var(--video-card-text); border-radius: 18px; }
+  .mono { font-family: var(--video-font-label); }
+
+  /* A: opening card */
+  #sA { inset: 0; background: var(--video-stage); }
+  #sA img { position: absolute; left: var(--video-margin); top: 110px; width: 120px; }
+  #sA .hl { position: absolute; left: var(--video-margin); font-family: var(--video-font-headline); font-size: var(--video-size-opening-line);
+            font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  #sA .kick { position: absolute; left: var(--video-margin); top: 760px; font-family: var(--video-font-label);
+              font-size: var(--video-size-mono-label-max); color: var(--video-stage-muted); }
+
+  /* B: weeks of edits, the brand drifts */
+  .wk { top: 400px; width: 250px; height: 330px; padding: 26px; }
+  .wk h4 { margin: 0 0 18px; font-family: var(--video-font-label); font-size: 22px; font-weight: 500; color: var(--video-card-muted); }
+  .wk .sw { width: 100%; height: 120px; border-radius: 10px; }
+  .wk .ln { height: 14px; border-radius: 5px; background: var(--video-card-faint); opacity: .3; margin-top: 16px; }
+  .wk .tag { position: absolute; left: 26px; bottom: 22px; font-family: var(--video-font-label); font-size: 20px; color: var(--video-card-muted); }
+
+  /* C: render(t) */
+  #code { left: var(--video-margin); top: 380px; width: 760px; height: 470px; padding: 44px 48px; }
+  #code pre { margin: 0; font-family: var(--video-font-label); font-size: 30px; line-height: 1.6; color: var(--video-card-text); }
+  #code .k { color: var(--video-accent-on-card); }
+  #code .c { color: var(--video-card-muted); }
+  #tv { color: var(--video-accent-on-card); }
+  #frameBox { left: 1000px; top: 380px; width: 760px; height: 428px; border-radius: 18px; border: 2px solid var(--video-stage-rule); overflow: hidden; }
+  #dot { width: 120px; height: 120px; border-radius: 60px; background: var(--video-accent); top: 154px; }
+  #frameLbl { left: 1000px; top: 832px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-min); color: var(--video-stage-muted); }
+  #scrub { left: 1000px; top: 880px; width: 760px; height: 8px; border-radius: 4px; background: var(--video-stage-rule); }
+  #head { top: -10px; width: 6px; height: 28px; border-radius: 3px; background: var(--video-accent-on-stage); }
+
+  /* D: voice, then heard back */
+  .take { left: var(--video-margin); width: 1600px; height: 150px; padding: 26px 34px; }
+  .take .id { position: absolute; left: 34px; top: 26px; font-family: var(--video-font-label); font-size: 22px; color: var(--video-card-muted); }
+  .take .wave { position: absolute; left: 34px; top: 66px; width: 560px; height: 60px; display: flex; align-items: center; gap: 5px; }
+  .take .wave i { display: block; width: 6px; border-radius: 3px; background: var(--video-accent); }
+  .take .heard { position: absolute; left: 640px; top: 30px; width: 720px; font-size: 30px; line-height: 1.3; color: var(--video-card-text); white-space: nowrap; overflow: hidden; }
+  .take .chip { position: absolute; top: 88px; font-family: var(--video-font-label); font-size: 22px; padding: 4px 14px; border-radius: 999px;
+                border: 2px solid var(--video-accent-on-card); color: var(--video-accent-on-card); }
+  .take .ok { position: absolute; right: 34px; top: 50px; font-family: var(--video-font-label); font-size: 30px; font-weight: 500; color: var(--video-accent-on-card); }
+
+  /* E: the render, checked */
+  .fr { top: 400px; width: 120px; height: 68px; border-radius: 6px; border: 2px solid var(--video-stage-rule); box-sizing: border-box; overflow: hidden; }
+  .fr i { position: absolute; top: 18px; width: 30px; height: 30px; border-radius: 15px; background: var(--video-accent); }
+  .stat { top: 580px; }
+  .stat .v { font-family: var(--video-font-headline); font-size: 96px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--video-stage-text); }
+  .stat .k { margin-top: 14px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max); color: var(--video-stage-muted); }
+
+  /* L: end card */
+  #sL { inset: 0; background: var(--video-card); color: var(--video-card-text); }
+  #sL img { position: absolute; left: var(--video-margin); top: 110px; width: 120px; }
+  #sL .hl { position: absolute; left: var(--video-margin); top: 360px; font-family: var(--video-font-headline);
+            font-size: var(--video-size-end-card-line); font-weight: 700; line-height: 1; letter-spacing: -0.03em; white-space: nowrap; }
+  #sL .hl em { color: var(--video-accent-on-card); }
+  #sL .sub { position: absolute; left: var(--video-margin); top: 590px; font-size: var(--video-size-body-max); color: var(--video-card-muted); }
+  #sL .url { position: absolute; left: var(--video-margin); top: 680px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max); color: var(--video-card-muted); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- B: the usual way -->
+  <div class="abs sec" id="sB">
+    <div class="abs label"><b>01</b><span>· the usual way</span></div>
+    <div class="abs title">Weeks of edits, <em>a brand that drifts.</em></div>
+    <div id="weeks"></div>
+  </div>
+
+  <!-- C: render(t) -->
+  <div class="abs sec" id="sC">
+    <div class="abs label"><b>02</b><span>· the idea</span></div>
+    <div class="abs title">Every frame is <em>a function of time.</em></div>
+    <div class="abs card" id="code"><pre><span class="c">// scene.html</span>
+<span class="k">function</span> render(t) {
+  dot.x = ease(t) * 520;
+  label.text = t.toFixed(2);
+}
+render(<span id="tv">0.00</span>);</pre></div>
+    <div class="abs" id="frameBox"><div class="abs" id="dot"></div></div>
+    <div class="abs" id="frameLbl">frame 0 of 1,440</div>
+    <div class="abs" id="scrub"><div class="abs" id="head"></div></div>
+  </div>
+
+  <!-- D: voiced, then heard back -->
+  <div class="abs sec" id="sD">
+    <div class="abs label"><b>03</b><span>· the voice</span></div>
+    <div class="abs title">Every line is <em>heard back.</em></div>
+    <div id="takes"></div>
+  </div>
+
+  <!-- E: rendered, then checked -->
+  <div class="abs sec" id="sE">
+    <div class="abs label"><b>04</b><span>· the render</span></div>
+    <div class="abs title">Rendered, then <em>checked.</em></div>
+    <div id="strip"></div>
+    <div class="abs stat" id="st0" style="left:160px"><div class="v" id="frames">0</div><div class="k">of 1,440 frames</div></div>
+    <div class="abs stat" id="st1" style="left:700px"><div class="v">-16 LUFS</div><div class="k">the narration, normalized</div></div>
+    <div class="abs stat" id="st2" style="left:1300px"><div class="v">.vtt</div><div class="k">captions from the spoken words</div></div>
+  </div>
+
+  <!-- A: opening card (late in the DOM so it covers the stage until it fades) -->
+  <div class="abs" id="sA">
+    <img src="assets/logo-on-stage.svg" alt="brand-film">
+    <div class="hl" style="top:400px">Brand films,</div>
+    <div class="hl" style="top:540px">made in <em>code.</em></div>
+    <div class="kick">a Claude Code skill · open source</div>
+  </div>
+
+  <!-- L: end card -->
+  <div class="abs" id="sL">
+    <img src="assets/logo-on-card.svg" alt="brand-film">
+    <div class="hl" id="lH">Make the film <em>in code.</em></div>
+    <div class="sub" id="lSub">Your brand, your story, every name said right.</div>
+    <div class="url" id="lUrl">github.com/davidscotttufts/brand-film</div>
+  </div>
+</div>
+
+<script>
+const DURATION = 48.0;
+const FPS = 30;
+const POSTER_T = 2.0;
+
+// On-screen captions, used only when the film renders without narration.
+const CAPTIONS = [
+  [0.8, 5.2, 'This film was made by a script, not an editor.'],
+  [6.2, 11.6, 'Explainer videos take weeks of edits, and the brand drifts with every one.'],
+  [14.0, 21.3, 'brand-film writes the film as an HTML scene, where every frame is a function of time.'],
+  [22.8, 30.5, 'ElevenLabs voices each line, then listens back to check every name was said right.'],
+  [32.0, 39.7, 'Headless Chrome renders each frame, and ffmpeg mixes the voice, music and captions.'],
+  [41.0, 46.9, 'Your brand, your story, made in code. Find brand-film on GitHub.'],
+];
+
+// Cue times, from the voiced words (narration/manifest.json).
+const CUE = {
+  weeks: 7.56,         // "weeks"
+  drifts: 9.64,        // "drifts"
+  frame: 18.0,         // "frame"
+  voices: 23.6,        // "voices"
+  listens: 25.28,      // "listens"
+  name: 26.64,         // "name"
+  renders: 32.88,      // "renders"
+  ffmpeg: 34.48,       // "ffmpeg"
+  captions: 37.2,      // "captions"
+};
+
+// The six weeks: each export's swatch is a different role, so the "brand"
+// colour visibly wanders. Roles only, no hex.
+const WEEKS = [
+  ['week 1', 'var(--video-accent)'], ['week 2', 'var(--video-accent-on-card)'], ['week 3', 'var(--video-stage-muted)'],
+  ['week 4', 'var(--video-card-faint)'], ['week 5', 'var(--video-stage-rule)'], ['week 6', 'var(--video-card-muted)'],
+];
+const weekT = (i) => CUE.weeks + i * 0.42;
+
+// Three takes, each heard back with the brand terms it must contain.
+const TAKES = [
+  { id: 'take 1', heard: 'ElevenLabs voices each line,', chips: ['ElevenLabs'] },
+  { id: 'take 2', heard: 'ffmpeg mixes the voice,', chips: ['ffmpeg'] },
+  { id: 'take 3', heard: 'an HTML scene,', chips: ['HTML'] },
+];
+const takeT = (i) => CUE.voices + i * 1.1;
+
+const STRIP = 12;
+
+const SFX = [
+  [0.3, 'sweep'], [1.2, 'chime', -22],
+  [5.8, 'sweep'], ...WEEKS.map((_, i) => [weekT(i), 'pop']), [CUE.drifts, 'refuse', -20],
+  [13.6, 'sweep'], [CUE.frame, 'chime', -21],
+  [22.4, 'sweep'], ...TAKES.map((_, i) => [takeT(i), 'pop']), ...TAKES.map((_, i) => [CUE.name + i * 0.5, 'tick', -24]), [CUE.name + 1.4, 'chime'],
+  [31.6, 'sweep'], ...Array.from({ length: STRIP }, (_, i) => [CUE.renders + i * 0.18, 'tick', -30]), [CUE.captions, 'chime'],
+  [40.6, 'sweep'], [41.2, 'chime', -20],
+];
+
+const INSERTS = [];
+const toFilm = (b) => b + INSERTS.reduce((s, i) => s + (i.at <= b ? i.d : 0), 0);
+for (const cue of SFX) cue[0] = toFilm(cue[0]);
+SFX.sort((a, b) => a[0] - b[0]);
+
+const $ = (id) => document.getElementById(id);
+const clamp = (v) => Math.max(0, Math.min(1, v));
+const ease = (v) => { v = clamp(v); return v < 0.5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2; };
+const ramp = (t, a, b) => ease((t - a) / (b - a));
+const win = (t, a, b, c, d) => Math.min(ramp(t, a, b), 1 - ramp(t, c, d));
+function setO(el, o, dy = 0) {
+  el.style.opacity = o.toFixed(3);
+  el.style.transform = dy ? `translateY(${(dy * (1 - o)).toFixed(1)}px)` : '';
+  el.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+}
+
+// Built once.
+$('weeks').innerHTML = WEEKS.map(([w, c], i) =>
+  `<div class="abs card wk" id="wk${i}" style="left:${160 + i * 272}px"><h4>export v${i + 1}</h4><div class="sw" style="background:${c}"></div><div class="ln"></div><div class="ln" style="width:70%"></div><div class="tag">${w}</div></div>`).join('');
+// Waveform heights are a fixed function of the bar index: deterministic.
+const bars = (k) => Array.from({ length: 64 }, (_, j) => `<i style="height:${(10 + 46 * Math.abs(Math.sin(j * 0.55 + k) * Math.cos(j * 0.21 + k * 2))).toFixed(0)}px"></i>`).join('');
+$('takes').innerHTML = TAKES.map((tk, i) =>
+  `<div class="abs card take" id="tk${i}" style="top:${370 + i * 180}px"><div class="id">${tk.id}</div><div class="wave" id="wv${i}">${bars(i)}</div>` +
+  `<div class="heard" id="hd${i}"></div>${tk.chips.map((c, j) => `<div class="chip" id="ch${i}" style="left:${640 + j * 220}px">${c}</div>`).join('')}<div class="ok" id="ok${i}">heard ✓</div></div>`).join('');
+$('strip').innerHTML = Array.from({ length: STRIP }, (_, i) =>
+  `<div class="abs fr" id="fr${i}" style="left:${160 + i * 134}px"><i style="left:${(6 + i * 6.5).toFixed(0)}px"></i></div>`).join('');
+
+function renderBase(t) {
+  // A: complete from frame 0 (the thumbnail), then fades.
+  setO($('sA'), 1 - ramp(t, 5.2, 6.0));
+
+  // B: six exports land on "weeks"; the swatches are already all different.
+  setO($('sB'), win(t, 5.6, 6.2, 13.0, 13.6));
+  WEEKS.forEach((_, i) => setO($('wk' + i), ramp(t, weekT(i), weekT(i) + 0.5), 40));
+
+  // C: time scrubs; the code's t and the picture move together.
+  setO($('sC'), win(t, 13.6, 14.2, 21.8, 22.4));
+  const k = ramp(t, 15.0, 21.0);
+  const tt = 48 * k;
+  $('tv').textContent = tt.toFixed(2);
+  $('dot').style.left = (40 + 560 * ease(k)) + 'px';
+  $('head').style.left = (754 * k) + 'px';
+  $('frameLbl').textContent = `frame ${Math.round(1440 * k).toLocaleString('en-US')} of 1,440`;
+  setO($('frameBox'), ramp(t, 14.6, 15.2));
+
+  // D: each take's waveform lands, then what was heard types in, then its term is ticked.
+  setO($('sD'), win(t, 22.4, 23.0, 30.8, 31.4));
+  TAKES.forEach((tk, i) => {
+    setO($('tk' + i), ramp(t, takeT(i), takeT(i) + 0.5), 30);
+    const n = Math.round(tk.heard.length * ramp(t, CUE.listens + i * 0.4, CUE.listens + i * 0.4 + 1.4));
+    $('hd' + i).textContent = tk.heard.slice(0, n);
+    setO($('ch' + i), ramp(t, CUE.name + i * 0.5, CUE.name + i * 0.5 + 0.3));
+    setO($('ok' + i), ramp(t, CUE.name + 1.4, CUE.name + 1.8));
+  });
+
+  // E: the frame strip fills as frames render; the counter reaches the real total.
+  setO($('sE'), win(t, 31.6, 32.2, 40.4, 41.0));
+  for (let i = 0; i < STRIP; i++) setO($('fr' + i), ramp(t, CUE.renders + i * 0.18, CUE.renders + i * 0.18 + 0.3), 16);
+  $('frames').textContent = Math.round(1440 * ramp(t, CUE.renders, CUE.renders + 2.4)).toLocaleString('en-US');
+  setO($('st0'), ramp(t, CUE.renders, CUE.renders + 0.5), 20);
+  setO($('st1'), ramp(t, CUE.ffmpeg, CUE.ffmpeg + 0.5), 20);
+  setO($('st2'), ramp(t, CUE.captions, CUE.captions + 0.5), 20);
+
+  // L: end card.
+  setO($('sL'), ramp(t, 40.6, 41.2));
+  setO($('lH'), ramp(t, 41.2, 42.0), 40);
+  setO($('lSub'), ramp(t, 42.2, 43.0), 20);
+  setO($('lUrl'), ramp(t, 43.4, 44.0), 10);
+}
+
+function render(t) { renderBase(t); }
+
+window.DURATION = DURATION;
+window.FPS = FPS;
+window.CAPTIONS = CAPTIONS;
+window.POSTER_T = POSTER_T;
+window.SFX = SFX;
+window.render = render;
+const q = new URLSearchParams(location.search).get('t');
+if (q !== null) render(parseFloat(q));
+else { const t0 = performance.now(); (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>
