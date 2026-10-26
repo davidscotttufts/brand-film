@@ -4,6 +4,7 @@
 //   npm run sheet                      # preview/sheet.jpg: a frame every 2s, labelled
 //   npm run sheet -- 4                 # …every 4s
 //   npm run sheet -- 40 80 1           # …from 40s to 80s, every 1s
+//   npm run sheet -- --lang es         # …with the scene's Spanish on-screen text
 //
 // Look at the frames, not the code: a frame shows overlap, clipping, text under
 // the readable floor, an element that never faded out, and a cue that lands
@@ -21,9 +22,11 @@ const dir = join(here, 'preview');
 mkdirSync(dir, { recursive: true });
 const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-await page.goto(pathToFileURL(join(here, film.scene)).href + '?t=0');
+const langAt = process.argv.indexOf('--lang');
+const lang = langAt > -1 ? process.argv[langAt + 1] : null;
+await page.goto(pathToFileURL(join(here, film.scene)).href + '?t=0' + (lang ? `&lang=${encodeURIComponent(lang)}` : ''));
 await page.evaluate(() => document.fonts.ready);
-const args = process.argv.slice(2).filter((a) => a !== '--sheet').map(Number);
+const args = process.argv.slice(2).filter((a, i, all) => a !== '--sheet' && a !== '--lang' && all[i - 1] !== '--lang').map(Number);
 
 if (process.argv.includes('--sheet')) {
   const duration = await page.evaluate(() => window.DURATION);
@@ -38,13 +41,13 @@ if (process.argv.includes('--sheet')) {
   // Lay the frames out on a second page, five across, each labelled with its time.
   const sheet = await browser.newPage({ viewport: { width: 2000, height: 400 } });
   await sheet.setContent(`<body style="margin:0;background:#111;font:600 18px Menlo,monospace;color:#eee;display:grid;grid-template-columns:repeat(5,384px);gap:16px 16px;padding:16px;width:2000px;box-sizing:border-box">${shots.map((s) => `<figure style="margin:0"><img src="${s.src}" style="width:384px;height:216px;display:block"><figcaption style="padding:4px 0">${s.t.toFixed(1)}s</figcaption></figure>`).join('')}</body>`);
-  const file = join(dir, `sheet-${a}-${(+b).toFixed(0)}.jpg`);
+  const file = join(dir, `sheet-${a}-${(+b).toFixed(0)}${lang ? `.${lang}` : ''}.jpg`);
   await sheet.screenshot({ path: file, type: 'jpeg', quality: 75, fullPage: true });
   console.log(`[sheet] ${times.length} frames -> ${file}`);
 } else {
   for (const t of args) {
     await page.evaluate((t) => window.render(t), t);
-    const file = join(dir, `t${t.toFixed(1).padStart(6, '0')}.jpg`);
+    const file = join(dir, `t${t.toFixed(1).padStart(6, '0')}${lang ? `.${lang}` : ''}.jpg`);
     await page.locator('#stage').screenshot({ path: file, type: 'jpeg', quality: 75 });
     console.log(file);
   }

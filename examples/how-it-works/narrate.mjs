@@ -4,6 +4,8 @@
 //   npm run narrate                  # voice changed takes, check them, check every window
 //   npm run audition                 # voice take 1 with each voice in narration.json `auditions`
 //   npm run audition -- <voiceId>…   # …or with the voices you name
+//   npm run narrate -- --lang es     # the Spanish voice-over (narration.es.json, mode voice)
+//   npm run audition -- --lang es <voiceId>…   # audition Spanish narrators
 //
 // A take is written with its WRITTEN forms (`text`: "nginx shipped in
 // 17 weeks"); the brand's pronunciation lexicon (brand-tokens.json
@@ -39,15 +41,21 @@ import { fileURLToPath } from 'node:url';
 import { compileLexicon, lintLexicon } from './lib/lexicon.mjs';
 import { checkTranscript } from './lib/verify.mjs';
 import { account, el, elJson, hasCli } from './lib/elevenlabs.mjs';
+import { filmLanguages, langPaths, rulesFor, translatedTakes } from './lib/lang.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = JSON.parse(readFileSync(join(here, 'narration.json'), 'utf8'));
+const baseLang = cfg.language ?? 'en';
+const langArg = process.argv.indexOf('--lang');
+const lang = langArg > -1 ? process.argv[langArg + 1] : null;
+const P = langPaths(here, lang, baseLang);
+const argv = process.argv.slice(2).filter((a, i, all) => a !== '--lang' && all[i - 1] !== '--lang');
 const tokensPath = join(here, 'brand-tokens.resolved.json');
 if (!existsSync(tokensPath)) { console.error('no brand-tokens.resolved.json: run npm run tokens first'); process.exit(1); }
 const tokens = JSON.parse(readFileSync(tokensPath, 'utf8'));
 const narrator = tokens.video?.voice?.narrator;
 if (narrator?.model && narrator?.voiceId) {
-  if (cfg.model !== narrator.model || cfg.voice?.id !== narrator.voiceId) {
+  if (!lang && (cfg.model !== narrator.model || cfg.voice?.id !== narrator.voiceId)) {
     console.log(`narrator from the design system: ${narrator.model}, ${narrator.voiceName || narrator.voiceId}`);
   }
   cfg.model = narrator.model;
@@ -55,7 +63,22 @@ if (narrator?.model && narrator?.voiceId) {
 }
 const lexProblems = lintLexicon(tokens.brand?.pronunciations ?? []);
 if (lexProblems.length) { for (const p of lexProblems) console.error(`[lexicon] ${p}`); process.exit(1); }
-const lex = compileLexicon(tokens.brand?.pronunciations ?? []);
+const lex = compileLexicon(rulesFor(tokens.brand?.pronunciations ?? [], P.code, baseLang));
+
+// A translated voice-over: the base takes' timing with the translation's text,
+// that language's narrator, and its own folder and lock file.
+if (!P.own) {
+  const entry = filmLanguages(cfg).find((l) => l.code === lang);
+  if (!entry) { console.error(`${lang} is not one of the film's languages: npm run translate -- ${lang}:voice`); process.exit(1); }
+  if (entry.mode !== 'voice') { console.error(`${lang} is captions-only; its captions come from npm run render. For a voice-over: npm run translate -- ${lang}:voice`); process.exit(1); }
+  const { translation, takes, problems } = translatedTakes(here, cfg, lang);
+  if (problems.length) { for (const p of problems) console.error(`[${lang}] ${p}`); console.error(`Translate narration.${lang}.json, then re-run.`); process.exit(1); }
+  cfg.takes = takes;
+  if (translation.voice?.id) cfg.voice = { id: translation.voice.id, name: translation.voice.name || translation.voice.id };
+  if (translation.voice?.id) console.log(`${lang} narrator: ${cfg.model}, ${cfg.voice.name}`);
+  else console.warn(`[${lang}] no narrator in narration.${lang}.json "voice"; using ${cfg.voice?.name ?? cfg.voice?.id}, which may not be a native ${lang} voice`);
+  if (translation.model) cfg.model = translation.model;
+}
 const verifyCfg = { enabled: true, model: 'scribe_v1', maxWer: 0.15, attempts: 3, ...(cfg.verify ?? {}) };
 const timing = cfg.timing ?? 'tts'; // 'tts': the voice's own timestamps; 'forced-alignment': re-aligned against the text
 
@@ -76,6 +99,11 @@ const model = models.find((m) => m.model_id === cfg.model);
 if (!model || !model.can_do_text_to_speech) {
   console.error(`model "${cfg.model}" is not a text-to-speech model on this account. Available:`);
   for (const m of models.filter((x) => x.can_do_text_to_speech)) console.error(`  ${m.model_id}  (${m.name})`);
+  process.exit(1);
+}
+const iso = P.code.split('-')[0];
+if (model.languages?.length && !model.languages.some((l) => l.language_id === iso || l.language_id === P.code)) {
+  console.error(`${cfg.model} does not speak ${P.code}. Models that do: ${models.filter((m) => m.can_do_text_to_speech && m.languages?.some((l) => l.language_id === iso)).map((m) => m.model_id).join(', ')}`);
   process.exit(1);
 }
 
@@ -111,13 +139,13 @@ function forcedWords(mp3, text) {
 }
 
 function transcribe(mp3) {
-  const r = elJson(['speech-to-text', 'convert', '--model-id', verifyCfg.model, '--file', mp3, '--tag-audio-events', 'false']);
+  const r = elJson(['speech-to-text', 'convert', '--model-id', verifyCfg.model, '--file', mp3, '--tag-audio-events', 'false', '--language-code', iso]);
   return r.text ?? '';
 }
 
 // Audition: the same line in several voices, to choose the narrator by ear.
 if (process.argv.includes('--audition')) {
-  const ids = process.argv.slice(2).filter((a) => !a.startsWith('--'));
+  const ids = argv.filter((a) => !a.startsWith('--'));
   const cands = ids.length ? ids.map((id) => ({ id, name: id })) : (cfg.auditions ?? []);
   if (!cands.length) {
     console.error('No voices to audition. Add "auditions": [{"id","name"}] to narration.json, or pass ids.\nFind some with: elevenlabs voices search --format json');
@@ -142,8 +170,9 @@ if (!cfg.voice?.id) {
   process.exit(1);
 }
 
-const out = join(here, 'narration');
+const out = P.narrationDir;
 mkdirSync(out, { recursive: true });
+const rel = (f) => (P.own ? `narration/${f}` : `narration/${P.code}/${f}`);
 const plan = cfg.takes.map((take) => {
   const l = lines(take);
   const key = createHash('sha256')
@@ -164,11 +193,11 @@ if (toVoice.length) {
   if (acct?.remaining != null && chars > acct.remaining) { console.error(`The account has ${acct.remaining} characters left; this run needs ${chars}.`); process.exit(1); }
 }
 
-const lockPath = join(here, 'takes.lock.json');
+const lockPath = P.lockFile;
 const prevLock = existsSync(lockPath) ? JSON.parse(readFileSync(lockPath, 'utf8')) : { takes: [] };
 const prevByKey = new Map(prevLock.takes.map((t) => [`${t.id}.${t.key}`, t]));
-const manifest = { model: cfg.model, voice: cfg.voice, captionReplace: { ...Object.fromEntries(lex.rules.map((r) => [r.spoken, r.written])), ...(cfg.captionReplace ?? {}) }, takes: [] };
-const lock = { $comment: 'How every take was made. Committed with the film; generated by npm run narrate. The audio itself is not committed.', model: cfg.model, voice: cfg.voice, voiceSettings: cfg.voiceSettings, seed: cfg.seed ?? null, outputFormat: cfg.outputFormat, timing, verify: { model: verifyCfg.model, maxWer: verifyCfg.maxWer }, takes: [] };
+const manifest = { language: P.code, model: cfg.model, voice: cfg.voice, captionReplace: { ...Object.fromEntries(lex.rules.map((r) => [r.spoken, r.written])), ...(cfg.captionReplace ?? {}) }, takes: [] };
+const lock = { $comment: 'How every take was made. Committed with the film; generated by npm run narrate. The audio itself is not committed.', language: P.code, model: cfg.model, voice: cfg.voice, voiceSettings: cfg.voiceSettings, seed: cfg.seed ?? null, outputFormat: cfg.outputFormat, timing, verify: { model: verifyCfg.model, maxWer: verifyCfg.maxWer }, takes: [] };
 const keep = new Set(['manifest.json']);
 let overruns = 0, failed = 0;
 let prevEnd = 0;
@@ -189,7 +218,7 @@ for (const p of plan) {
     if (!verifyCfg.enabled) break;
     if (!result) {
       const transcript = transcribe(p.mp3);
-      result = { ...checkTranscript({ transcript, spoken: p.spoken, written: p.written, terms: p.terms, maxWer: verifyCfg.maxWer }), transcript, attempt };
+      result = { ...checkTranscript({ transcript, spoken: p.spoken, written: p.written, terms: p.terms, maxWer: verifyCfg.maxWer, lang: iso }), transcript, attempt };
       writeFileSync(p.check, JSON.stringify(result, null, 2) + '\n');
     }
     if (result.pass) break;
@@ -224,7 +253,7 @@ for (const p of plan) {
   }
   manifest.takes.push({
     id: take.id, at: take.at, until: take.until, speak: p.spoken,
-    file: `narration/${p.base}.mp3`, duration: +duration.toFixed(3),
+    file: rel(`${p.base}.mp3`), duration: +duration.toFixed(3),
     words: ws.map((w) => ({ text: w.text, start: +(take.at + w.start).toFixed(3), end: +(take.at + w.end).toFixed(3) })),
   });
   const prev = prevByKey.get(p.base);

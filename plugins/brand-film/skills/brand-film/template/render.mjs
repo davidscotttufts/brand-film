@@ -11,13 +11,12 @@
 // on its own so nothing else changes how loud the voice is), effects at their
 // own gains, and the score, which fades in and out and ducks under the voice
 // through a sidechain compressor. A limiter guards the sum.
-import { chromium } from 'playwright-core';
-import ffmpegPath from 'ffmpeg-static';
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { checkSpokenWords } from './lib/audiocheck.mjs';
+import { distributedCues, filmLanguages, langPaths, translatedTakes } from './lib/lang.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const film = JSON.parse(readFileSync(join(here, 'film.json'), 'utf8'));
@@ -25,9 +24,48 @@ const scene = join(here, film.scene);
 const out = join(here, 'out');
 mkdirSync(out, { recursive: true });
 
+// Languages (lib/lang.mjs, translate.mjs). With no --lang this renders the film
+// in its own language and writes every captions-only language's captions. With
+// --lang <code> it renders that language: a captions-only language gets its
+// .vtt; a voice language gets its own film (out/<basename>.<code>.mp4) with its
+// voice-over and captions, the scene loaded with ?lang=<code>. --all renders
+// the film and then every voice language.
+const nar = existsSync(join(here, 'narration.json')) ? JSON.parse(readFileSync(join(here, 'narration.json'), 'utf8')) : { takes: [] };
+const baseLang = nar.language ?? 'en';
+const langAt = process.argv.indexOf('--lang');
+const lang = langAt > -1 ? process.argv[langAt + 1] : null;
+const P = langPaths(here, lang, baseLang);
+const langs = filmLanguages(nar);
+if (!P.own && !langs.some((l) => l.code === lang)) { console.error(`${lang} is not one of the film's languages (npm run translate -- ${lang})`); process.exit(1); }
+const NAME = film.basename + P.suffix;
+const vttName = (code) => `${film.basename}.${code}.vtt`;
+const ts = (s) => new Date(s * 1000).toISOString().slice(11, 23);
+const writeVtt = (file, cues) => {
+  const v = ['WEBVTT', ''];
+  cues.forEach(([a, b, text], i) => { v.push(String(i + 1), `${ts(a)} --> ${ts(b)}`, text, ''); });
+  writeFileSync(join(out, file), v.join('\n'));
+};
+/** A captions-only language: its translation timed onto the film's own speech. */
+function translatedCaptions(code) {
+  const { takes, problems } = translatedTakes(here, nar, code);
+  if (problems.length) { for (const p of problems) console.error(`[render] ${code} ${p}`); console.error(`[render] FAIL ${code} captions: translate narration.${code}.json (npm run translate), then re-render`); process.exit(1); }
+  const basePath = join(here, 'narration', 'manifest.json');
+  // Each take's voiced word times when it has them, else its scene window.
+  const voiced = new Map((existsSync(basePath) ? JSON.parse(readFileSync(basePath, 'utf8')).takes : []).map((t) => [t.id, t]));
+  const timed = nar.takes.map((t) => voiced.get(t.id) ?? t);
+  const cues = distributedCues(new Map(takes.map((t) => [t.id, t.text])), timed);
+  writeVtt(vttName(code), cues);
+  console.log(`[render] wrote out/${vttName(code)} (${cues.length} cues, captions only)`);
+}
+if (!P.own && langs.find((l) => l.code === lang).mode === 'captions') { translatedCaptions(lang); process.exit(0); }
+
+// Loaded only now: a captions-only language needs neither Chrome nor ffmpeg.
+const { chromium } = await import('playwright-core');
+const ffmpegPath = (await import('ffmpeg-static')).default;
+
 // Facts: every string in film.json `facts` must appear in the source text and
 // in the scene, so a film never shows a number its source no longer says.
-if (film.facts?.length) {
+if (P.own && film.facts?.length) {
   const norm = (s) => s.replace(/&amp;/g, '&').replace(/\s+/g, ' ');
   const src = film.source && existsSync(join(here, film.source)) ? norm(readFileSync(join(here, film.source), 'utf8')) : null;
   const html = norm(readFileSync(scene, 'utf8'));
@@ -46,7 +84,7 @@ const CHROME = process.env.CHROME_PATH
 
 const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
-await page.goto(pathToFileURL(scene).href + '?t=0');
+await page.goto(pathToFileURL(scene).href + '?t=0' + (P.own ? '' : `&lang=${encodeURIComponent(P.code)}`));
 await page.evaluate(() => document.fonts.ready);
 // Each token family's first face must be usable; a missing one silently renders the fallback.
 // Ask for each face first: a face the scene hasn't drawn yet isn't loaded,
@@ -62,6 +100,10 @@ const missing = await page.evaluate(async () => {
   }
   return out;
 });
+if (!P.own) {
+  const untranslated = await page.evaluate(() => window.I18N_MISSING ?? []);
+  if (untranslated.length) console.warn(`[render] on-screen text not translated into ${P.code}: ${untranslated.join(', ')} (scene.html STRINGS.${P.code})`);
+}
 if (missing.length) console.warn(`[render] fonts not loaded: ${missing.join(', ')} (offline, or a licensed face with no file? the fallback face will render)`);
 const { duration, fps, captions, posterT, sfxCues } = await page.evaluate(() => ({
   duration: window.DURATION, fps: window.FPS, captions: window.CAPTIONS ?? [], posterT: window.POSTER_T ?? 0,
@@ -75,13 +117,14 @@ const shot = async (t, opts) => {
 };
 
 // Poster.
-writeFileSync(join(out, `${film.basename}-poster.jpg`), await shot(posterT, { type: 'jpeg', quality: 82 }));
+writeFileSync(join(out, `${NAME}-poster.jpg`), await shot(posterT, { type: 'jpeg', quality: 82 }));
 
 // Narration (optional): narrate.mjs writes narration/manifest.json. With it,
 // each take is mixed in at its `at`, and the captions are the SPOKEN words,
 // timed from the take's word timestamps. Without it the film carries the
 // scene's on-screen CAPTIONS.
-const manifestPath = join(here, 'narration', 'manifest.json');
+const manifestPath = join(P.narrationDir, 'manifest.json');
+if (!P.own && !existsSync(manifestPath)) { console.error(`[render] no ${P.code} voice-over yet: npm run narrate -- --lang ${P.code}`); process.exit(1); }
 const narration = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : null;
 
 /** Caption cues from word timings: one per sentence, or per clause when a
@@ -111,13 +154,13 @@ function narrationCues(n) {
 }
 
 // Captions.
-const ts = (s) => new Date(s * 1000).toISOString().slice(11, 23);
 const vtt = ['WEBVTT', ''];
 const cues = narration
   ? narrationCues(narration)
   : captions.map(([a, b, text]) => [a, b, text.replace(/<[^>]+>/g, '')]);
 cues.forEach(([a, b, text], i) => { vtt.push(String(i + 1), `${ts(a)} --> ${ts(b)}`, text, ''); });
-writeFileSync(join(out, `${film.basename}.en.vtt`), vtt.join('\n'));
+writeFileSync(join(out, vttName(P.code)), vtt.join('\n'));
+if (P.own) for (const l of langs) if (l.mode === 'captions') translatedCaptions(l.code);
 
 // Sound effects (optional): the scene cues them as window.SFX = [[t, id, gainDb?]].
 // An unknown id fails the render rather than leaving a silent hole.
@@ -184,7 +227,7 @@ if (lines.length || effects.length || music) {
   audioOut = ['-filter_complex', graph.join(';'), '-map', '0:v', '-map', '[aout]',
     '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2', '-t', String(duration)];
 }
-const mp4 = join(out, `${film.basename}.mp4`);
+const mp4 = join(out, `${NAME}.mp4`);
 const ff = spawn(ffmpegPath, [
   '-y', '-loglevel', 'error',
   '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-',
@@ -204,7 +247,7 @@ for (let f = 0; f < frames; f++) {
 ff.stdin.end();
 await done;
 await browser.close();
-console.log(`\n[render] wrote out/${film.basename}.{mp4,en.vtt} and the poster (${frames} frames)`);
+console.log(`\n[render] wrote out/${NAME}.mp4, out/${vttName(P.code)} and the poster (${frames} frames)`);
 
 // Verify the finished file rather than trusting the exit code: a headless
 // render once stopped after 435 frames with a clean exit. The frame count must
@@ -215,7 +258,7 @@ console.log(`\n[render] wrote out/${film.basename}.{mp4,en.vtt} and the poster (
 // some Linux builds print no frame count for a stream copy at all.
 const probe = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-map', '0:v', '-c', 'copy', '-f', 'framecrc', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 const counted = probe.status === 0 ? (probe.stdout ?? '').split('\n').filter((l) => /^\d/.test(l)).length : NaN;
-const report = { basename: film.basename, duration, fps, frames: counted, expectedFrames: frames, audio: audioOut[0] !== '-an', voice: lines.length > 0, captions: cues.length };
+const report = { basename: NAME, language: P.code, duration, fps, frames: counted, expectedFrames: frames, audio: audioOut[0] !== '-an', voice: lines.length > 0, captions: cues.length };
 if (report.audio) {
   const r = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
   const tail = (r.stderr ?? '').split('Summary:').pop();
@@ -223,14 +266,14 @@ if (report.audio) {
   report.truePeakDbtp = Number(/Peak:\s+(-?[\d.]+) dBFS/.exec(tail)?.[1] ?? NaN);
   console.log(`[render] mix: ${report.lufs} LUFS integrated, true peak ${report.truePeakDbtp} dBTP`);
 }
-writeFileSync(join(out, `${film.basename}.report.json`), JSON.stringify(report, null, 2) + '\n');
+writeFileSync(join(out, `${NAME}.report.json`), JSON.stringify(report, null, 2) + '\n');
 if (counted !== frames) { console.error(`[render] FAIL the file has ${counted} frames, expected ${frames}`); process.exit(1); }
 // Every spoken word must be in the finished film (lib/audiocheck.mjs).
 if (report.voice) {
   const voiced = { ...narration, takes: narration.takes.filter((t) => lines.includes(t)) };
   const spoken = checkSpokenWords({ ffmpegPath, mp4, manifest: voiced, dir: here });
   report.spokenWords = { checked: spoken.words, medianGainDb: +spoken.medianGainDb.toFixed(1), lost: spoken.lost.map((l) => `${l.take}: "${l.word}" at ${l.at}s`) };
-  writeFileSync(join(out, `${film.basename}.report.json`), JSON.stringify(report, null, 2) + '\n');
+  writeFileSync(join(out, `${NAME}.report.json`), JSON.stringify(report, null, 2) + '\n');
   if (spoken.lost.length) {
     console.error(`[render] FAIL ${spoken.lost.length} spoken word(s) are missing from the finished film: ${spoken.lost.map((l) => `"${l.word}" at ${l.at}s`).join(', ')}`);
     process.exit(1);
@@ -240,3 +283,12 @@ if (report.voice) {
 if (report.voice && !(report.lufs > -18 && report.lufs < -14)) console.warn(`[render] the mix is ${report.lufs} LUFS; expected about -16`);
 if (report.audio && report.truePeakDbtp > -1) console.warn(`[render] true peak ${report.truePeakDbtp} dBTP is over -1`);
 console.log(`[render] verified: ${counted} frames, ${cues.length} caption cues${report.audio ? ', stereo AAC' : ', silent'}`);
+
+// --all: then each voiced language, as its own film.
+if (P.own && process.argv.includes('--all')) {
+  for (const l of langs.filter((x) => x.mode === 'voice')) {
+    console.log(`\n[render] ${l.code}`);
+    const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--lang', l.code], { stdio: 'inherit' });
+    if (r.status !== 0) process.exit(r.status ?? 1);
+  }
+}

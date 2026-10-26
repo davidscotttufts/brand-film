@@ -8,16 +8,22 @@
 // with neither `text` nor `speak`; an anchor outside its take's window.
 // Warns on: numbers written as digits that the lexicon does not cover (a voice
 // may read "2025" as "two zero two five"); a gap under 0.4 s between takes.
+// Translations (narration.<code>.json, see translate.mjs): fails on a take not
+// yet translated or translated from a line that has since changed (stale), and
+// applies the same sentence and acronym rules with that language's lexicon. A
+// voiced translation's fit in its window is checked by npm run narrate.
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { compileLexicon } from './lib/lexicon.mjs';
+import { filmLanguages, rulesFor, translatedTakes } from './lib/lang.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = JSON.parse(readFileSync(join(here, 'narration.json'), 'utf8'));
 const resolved = join(here, 'brand-tokens.resolved.json');
 const tokens = existsSync(resolved) ? JSON.parse(readFileSync(resolved, 'utf8')) : {};
-const lex = compileLexicon(tokens.brand?.pronunciations ?? []);
+const baseLang = cfg.language ?? 'en';
+const lex = compileLexicon(rulesFor(tokens.brand?.pronunciations ?? [], baseLang, baseLang));
 const maxWords = tokens.video?.voice?.maxWordsPerSentence ?? 18;
 const sceneHtml = existsSync(join(here, 'scene.html')) ? readFileSync(join(here, 'scene.html'), 'utf8') : '';
 const duration = Number(/const DURATION = ([\d.]+)/.exec(sceneHtml)?.[1] ?? NaN);
@@ -55,5 +61,28 @@ cfg.takes.forEach((take, i) => {
     if (!written.toLowerCase().includes(a.word.toLowerCase()) && !spoken.toLowerCase().includes(a.word.toLowerCase())) err(`${id}: anchor "${a.word}" is not in the take`);
   }
 });
+// Translations.
+const spokenRules = (lexicon, id, text) => {
+  const spoken = lexicon.toSpoken(text);
+  for (const sentence of text.split(/(?<=[.!?。！？])\s+/)) {
+    const n = sentence.split(/\s+/).filter(Boolean).length;
+    if (n > maxWords + 4) warn(`${id}: a sentence has ${n} words: "${sentence}"`);
+  }
+  for (const sentence of spoken.split(/(?<=[.!?])\s+/)) {
+    if (/^([A-Z]\s){1,}[A-Z]\b/.test(sentence.trim())) err(`${id}: a sentence opens with a spelled acronym: "${sentence.slice(0, 40)}…"`);
+  }
+  for (const m of spoken.match(/\d+(?:[,.]\d+)*/g) ?? []) warn(`${id}: "${m}" is sent as digits; write it out, or add a pronunciation rule with "lang"`);
+};
+for (const { code, mode } of filmLanguages(cfg)) {
+  let tr;
+  try { tr = translatedTakes(here, cfg, code); } catch (e) { err(`${code}: ${e.message}`); continue; }
+  for (const p of tr.problems) err(`${code} ${p}`);
+  if ((tr.translation.mode ?? 'captions') !== mode) err(`${code}: narration.json says ${mode}, narration.${code}.json says ${tr.translation.mode}; re-run npm run translate`);
+  if (mode === 'voice' && !tr.translation.voice?.id) warn(`${code}: no narrator chosen in narration.${code}.json "voice"`);
+  const l = compileLexicon(rulesFor(tokens.brand?.pronunciations ?? [], code, baseLang));
+  for (const t of tr.takes) if (t.text) (mode === 'voice' ? spokenRules : () => {})(l, `${code} ${t.id}`, t.text);
+  console.log(`[lint] ${code} (${mode}): ${tr.takes.length - tr.problems.length} of ${tr.takes.length} takes translated`);
+}
+
 console.log(`[lint] ${cfg.takes.length} takes, ${errors} failure(s), ${warnings} warning(s)`);
 if (errors) process.exit(1);

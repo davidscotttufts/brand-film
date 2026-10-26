@@ -26,6 +26,22 @@
       {
         "written": "GitHub",
         "spoken": "Git Hub"
+      },
+      {
+        "written": "ffmpeg",
+        "spoken": "efe efe eme peg",
+        "lang": "es"
+      },
+      {
+        "written": "HTML",
+        "spoken": "hache te eme ele",
+        "caseSensitive": true,
+        "lang": "es"
+      },
+      {
+        "written": "GitHub",
+        "spoken": "Guit Hab",
+        "lang": "es"
       }
     ]
   }

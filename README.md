@@ -47,6 +47,26 @@ almost the brand's. brand-film checks each of those:
   the final mix, and checks that every load-bearing fact still appears in its
   source.
 
+## Other languages
+
+Each language is one of two modes:
+
+- **Captions only:** translated captions, timed onto the film's own speech. No
+  credits and no new render.
+- **Captions and voice-over:** a native narrator voices the translation, every
+  take is checked by speech-to-text in that language, the scene's on-screen
+  text is translated, and the language renders as its own film.
+
+```bash
+npm run translate -- es:voice fr       # Spanish voice-over, French captions
+npm run narrate -- --lang es
+npm run render -- --all                # the film, its captions in every language, and the Spanish film
+```
+
+Translations keep a hash of the line they came from, so when the script
+changes, lint and render fail until the stale translations are redone. See
+[`references/translation.md`](plugins/brand-film/skills/brand-film/references/translation.md).
+
 ## Install
 
 In Claude Code, add this repository as a plugin marketplace and install the

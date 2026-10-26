@@ -39,6 +39,7 @@ Everything is in this skill folder:
 | `references/scene-contract.md` | the scene contract, cues, INSERTS, review frames |
 | `references/sound.md` | ElevenLabs CLI, narrator audition, effects, music, mix |
 | `references/review-and-delivery.md` | approval loop, verification, decks/Slides/web |
+| `references/translation.md` | other languages: captions only, or captions and a voice-over |
 
 Read each reference when you reach its step.
 
@@ -67,6 +68,8 @@ answer; one short question round at most):
   None named → the neutral default identity; skip to Step 2.
 - **Length.** Explainer 45–75 s (default) or a journey film of 2–3 min.
 - **Where it goes.** A deck (speaker notes, Google Slides), a web page, a file.
+- **Other languages.** Which, and for each: translated captions only, or
+  captions and a voice-over (`references/translation.md`).
 - **Where the film folder lives.** Beside the sources by default (`<project>/film/`).
 
 ## Step 1: The brand's film design system
@@ -142,6 +145,17 @@ insertion steps; or the `<video>` + captions markup for a page. Write the film
 folder's README (the template's `README.md` is the start). Commit the sources
 and the lock files (`takes.lock.json`, `music.lock.json`), not the audio or
 `out/`.
+
+## Step 7b: Other languages
+
+Follow `references/translation.md`. `npm run translate -- es:voice fr` adds
+the languages and writes what needs translating; translate each take (same
+facts, the language's own forms, about the same length); add per-language
+pronunciation rules. Captions-only languages come out of every `npm run render`
+at no cost. A voiced language needs a native narrator chosen by ear, then
+`npm run narrate -- --lang es` (listening check in that language),
+translated on-screen text in the scene's `STRINGS`, and
+`npm run render -- --lang es`. Report which languages had native review.
 
 ## Step 8: Revisions
 

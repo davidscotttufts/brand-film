@@ -68,3 +68,46 @@ test('tokens --check fails on a stale css', () => {
   writeFileSync(join(dir, 'brand-tokens.css'), '/* edited */');
   assert.equal(run(dir, 'tokens.mjs', '--check').status, 1);
 });
+
+test('translate writes skeletons; lint fails until translated, and again when the source line changes', () => {
+  const dir = film();
+  run(dir, 'tokens.mjs');
+  assert.equal(run(dir, 'translate.mjs', 'fr', 'es:voice').status, 0);
+  const cfg = JSON.parse(readFileSync(join(dir, 'narration.json'), 'utf8'));
+  assert.deepEqual(cfg.languages, [{ code: 'fr', mode: 'captions' }, { code: 'es', mode: 'voice' }]);
+  let r = run(dir, 'lint.mjs');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /fr a-open: not translated/);
+  for (const code of ['fr', 'es']) {
+    const p = join(dir, `narration.${code}.json`);
+    const tr = JSON.parse(readFileSync(p, 'utf8'));
+    tr.takes.forEach((t) => { t.text = `${code} ${t.id}.`; });
+    if (code === 'es') tr.voice = { id: 'v', name: 'v' };
+    writeFileSync(p, JSON.stringify(tr));
+  }
+  r = run(dir, 'lint.mjs');
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  cfg.takes[1].text = 'A changed line.'; cfg.languages = JSON.parse(readFileSync(join(dir, 'narration.json'), 'utf8')).languages;
+  writeFileSync(join(dir, 'narration.json'), JSON.stringify(cfg));
+  run(dir, 'translate.mjs');
+  r = run(dir, 'lint.mjs');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /fr b-start: stale/);
+  assert.match(r.stderr, /es b-start: stale/);
+});
+
+test('a captions-only language renders its .vtt without Chrome or an account', () => {
+  const dir = film();
+  run(dir, 'tokens.mjs');
+  run(dir, 'translate.mjs', 'fr');
+  const p = join(dir, 'narration.fr.json');
+  const tr = JSON.parse(readFileSync(p, 'utf8'));
+  tr.takes.forEach((t, i) => { t.text = `Phrase ${['un', 'deux', 'trois', 'quatre'][i]}.`; });
+  writeFileSync(p, JSON.stringify(tr));
+  const r = run(dir, 'render.mjs', '--lang', 'fr');
+  assert.equal(r.status, 0, r.stderr);
+  const vtt = readFileSync(join(dir, 'out', 'brand-film.fr.vtt'), 'utf8');
+  assert.match(vtt, /^WEBVTT/);
+  assert.equal((vtt.match(/-->/g) ?? []).length, 4);
+  assert.match(vtt, /Phrase quatre\./);
+});

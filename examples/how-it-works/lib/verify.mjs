@@ -20,16 +20,24 @@ export function numberWords(n) {
   return numberWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numberWords(n % 1000) : '');
 }
 
-/** Words for comparison: lower case, no punctuation, digits as words, hyphens split. */
-export function normalize(text) {
+const NUM = '\u0001num';
+
+/**
+ * Words for comparison: lower case, no punctuation, hyphens split. In English,
+ * digits become words ("17" → "seventeen"). In other languages a run of digits
+ * becomes a token that matches any one word, since the script spells numbers
+ * out and the transcriber may write them as digits.
+ */
+export function normalize(text, lang = 'en') {
+  const en = lang === 'en';
   return text
     .toLowerCase()
-    .replace(/(\d),(\d{3})/g, '$1$2')
-    .replace(/\d+/g, (d) => ' ' + numberWords(Number(d)) + ' ')
-    .replace(/[%]/g, ' percent ')
-    .replace(/&/g, ' and ')
+    .replace(/(\d)[,.](\d{3})/g, '$1$2')
+    .replace(/\d+/g, (d) => ' ' + (en ? numberWords(Number(d)) : NUM) + ' ')
+    .replace(/[%]/g, en ? ' percent ' : ' ')
+    .replace(/&/g, en ? ' and ' : ' ')
     .replace(/[-–—/]/g, ' ')
-    .replace(/[^\p{L}\p{N}' ]/gu, ' ')
+    .replace(/[^\p{L}\p{N}'\u0001 ]/gu, ' ')
     .replace(/'/g, '')
     .split(/\s+/)
     .filter(Boolean);
@@ -42,7 +50,8 @@ export function wer(ref, hyp) {
   for (let i = 1; i <= ref.length; i++) {
     const cur = [i];
     for (let j = 1; j <= hyp.length; j++) {
-      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ref[i - 1] === hyp[j - 1] ? 0 : 1));
+      const same = ref[i - 1] === hyp[j - 1] || hyp[j - 1] === NUM || ref[i - 1] === NUM;
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (same ? 0 : 1));
     }
     prev = cur;
   }
@@ -57,10 +66,10 @@ const joined = (words) => ' ' + words.join(' ') + ' ';
  * word. Without this a transcriber's legitimate spelling of a term reads as
  * a word error.
  */
-function canonical(words, terms) {
+function canonical(words, terms, lang) {
   const forms = [];
   terms.forEach((t, i) => {
-    for (const f of [normalize(t.written), normalize(t.spoken)]) {
+    for (const f of [normalize(t.written, lang), normalize(t.spoken, lang)]) {
       if (f.length) forms.push({ words: f, squashed: f.join(''), id: `\u0000term${i}` });
     }
   });
@@ -81,10 +90,10 @@ function canonical(words, terms) {
  *   written:  the take as written (lexicon terms in their written form)
  *   terms:    lexicon rules the take uses ({ written, spoken })
  */
-export function checkTranscript({ transcript, spoken, written = spoken, terms = [], maxWer = 0.15 }) {
-  const hyp = canonical(normalize(transcript), terms);
+export function checkTranscript({ transcript, spoken, written = spoken, terms = [], maxWer = 0.15, lang = 'en' }) {
+  const hyp = canonical(normalize(transcript, lang), terms, lang);
   // Score against whichever form of the take the transcriber's spelling is closer to.
-  const rate = Math.min(wer(canonical(normalize(spoken), terms), hyp), wer(canonical(normalize(written), terms), hyp));
+  const rate = Math.min(wer(canonical(normalize(spoken, lang), terms, lang), hyp), wer(canonical(normalize(written, lang), terms, lang), hyp));
   const heard = joined(hyp);
   const missingTerms = terms.filter((_, i) => !heard.includes(` \u0000term${i} `)).map((t) => t.written);
   return { wer: +rate.toFixed(3), missingTerms, pass: rate <= maxWer && missingTerms.length === 0 };

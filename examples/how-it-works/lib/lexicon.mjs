@@ -4,6 +4,11 @@
 //   { "written": "nginx", "spoken": "engine x" }
 //   { "written": "17 weeks", "spoken": "seventeen weeks" }
 //   { "written": "API", "spoken": "A P I", "caseSensitive": true }
+//   { "written": "API", "spoken": "a pe i", "lang": "es" }
+//
+// A rule with no `lang` applies in every language; a rule with a `lang` applies
+// only to that language and overrides a general rule for the same term
+// (lib/lang.mjs rulesFor).
 //
 // narrate.mjs writes each take's text with the written forms and sends the
 // spoken forms to the voice; the captions turn the spoken words back into the
@@ -27,7 +32,7 @@ export function lintLexicon(rules) {
     if (!r || typeof r.written !== 'string' || !r.written.trim()) { problems.push(`${at}: "written" is empty`); return; }
     if (typeof r.spoken !== 'string' || !r.spoken.trim()) problems.push(`${at} (${r.written}): "spoken" is empty`);
     if (r.spoken === r.written) problems.push(`${at} (${r.written}): spoken is the same as written; remove the rule`);
-    const k = r.caseSensitive ? r.written : r.written.toLowerCase();
+    const k = `${r.lang ?? '*'}:${r.caseSensitive ? r.written : r.written.toLowerCase()}`;
     if (seen.has(k)) problems.push(`${at} (${r.written}): duplicates pronunciations[${seen.get(k)}]`);
     else seen.set(k, i);
   });

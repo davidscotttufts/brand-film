@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.1.0
+
+- **Translations**, per language, in one of two modes:
+  - `captions`: translated captions timed onto the film's own speech; no
+    credits and no new render (`out/<basename>.<code>.vtt`).
+  - `voice`: translated captions and a voice-over by a native narrator, voiced
+    and checked by speech-to-text in that language, rendered as its own film
+    (`out/<basename>.<code>.mp4`) with translated on-screen text.
+- `npm run translate` adds languages and keeps `narration.<code>.json` in step
+  with the script: a translation of a line that has since changed is marked
+  stale, and lint and render fail until it is re-translated.
+- Pronunciation rules can be per language (`"lang": "es"`).
+- `npm run narrate -- --lang <code>`, `npm run render -- --lang <code>` and
+  `--all`, `npm run sheet -- --lang <code>`, and auditions per language.
+- The scene template marks translatable text with `data-i18n`; the render warns
+  about any on-screen text a voiced language is missing.
+- A captions-only render needs neither Chrome nor ffmpeg.
+- The example film gains a Spanish voice-over and French captions.
+
+
 ## 1.0.1
 
 - **Fix: the end of the narration was cut off in films with music.** The voice

@@ -44,7 +44,7 @@
   },
   {
    "id": "c-frame",
-   "at": 14.0,
+   "at": 14,
    "until": 21.6,
    "scene": "render(t): a code card scrubs time and the picture follows",
    "text": "brand-film writes the film as an HTML scene, where every frame is a function of time.",
@@ -65,31 +65,42 @@
    "anchors": [
     {
      "word": "listens",
-     "from": 25.0,
+     "from": 25,
      "to": 26.4
     }
    ]
   },
   {
    "id": "e-render",
-   "at": 32.0,
-   "until": 40.0,
+   "at": 32,
+   "until": 40,
    "scene": "frame strip fills; 1,440 frames, -16 LUFS, captions",
    "text": "Headless Chrome renders each frame, and ffmpeg mixes the voice, music and captions.",
    "anchors": [
     {
      "word": "renders",
      "from": 32.6,
-     "to": 35.0
+     "to": 35
     }
    ]
   },
   {
    "id": "l-end",
-   "at": 41.0,
+   "at": 41,
    "until": 47.2,
    "scene": "paper end card: Make the film in code; the GitHub URL",
    "text": "Your brand, your story, made in code. Find brand-film on GitHub."
+  }
+ ],
+ "language": "en",
+ "languages": [
+  {
+   "code": "es",
+   "mode": "voice"
+  },
+  {
+   "code": "fr",
+   "mode": "captions"
   }
  ]
 }

@@ -7,6 +7,7 @@
     "doctor": "node doctor.mjs",
     "tokens": "node tokens.mjs",
     "lint": "node lint.mjs",
+    "translate": "node translate.mjs",
     "narrate": "node narrate.mjs",
     "audition": "node narrate.mjs --audition",
     "music": "node music.mjs",

@@ -1,0 +1,43 @@
+{
+ "$comment": "The fr translation of narration.json, one entry per take. Translate `source` into `text`: same meaning and facts, plain spoken sentences, about the same length (a voiced take must fit its scene's window). Keep brand names as the brand writes them; how they are SPOKEN in fr goes in brand-tokens.json brand.pronunciations with \"lang\": \"fr\". Never edit `source` or `sourceHash`: npm run translate keeps them in step, and marks a take `stale` when its source line changes. Delete `stale` once `text` is re-translated.",
+ "language": "fr",
+ "mode": "captions",
+ "takes": [
+  {
+   "id": "a-open",
+   "source": "This film was made by a script, not an editor.",
+   "sourceHash": "5130b47f8ba2",
+   "text": "Ce film a été fait par un script, pas par un monteur."
+  },
+  {
+   "id": "b-drift",
+   "source": "Explainer videos take weeks of edits, and the brand drifts with every one.",
+   "sourceHash": "87dd1e18c020",
+   "text": "Les vidéos explicatives demandent des semaines de montage, et la marque dérive à chaque fois."
+  },
+  {
+   "id": "c-frame",
+   "source": "brand-film writes the film as an HTML scene, where every frame is a function of time.",
+   "sourceHash": "9cdfa1dd866a",
+   "text": "brand-film écrit le film comme une scène HTML, où chaque image est une fonction du temps."
+  },
+  {
+   "id": "d-voice",
+   "source": "ElevenLabs voices each line, then listens back to check every name was said right.",
+   "sourceHash": "96aaa2668005",
+   "text": "ElevenLabs donne une voix à chaque phrase, puis l’écoute pour vérifier que chaque nom est bien prononcé."
+  },
+  {
+   "id": "e-render",
+   "source": "Headless Chrome renders each frame, and ffmpeg mixes the voice, music and captions.",
+   "sourceHash": "901392c9d5ec",
+   "text": "Chrome sans interface dessine chaque image, et ffmpeg mixe la voix, la musique et les sous-titres."
+  },
+  {
+   "id": "l-end",
+   "source": "Your brand, your story, made in code. Find brand-film on GitHub.",
+   "sourceHash": "c961344df153",
+   "text": "Votre marque, votre histoire, faites en code. Trouvez brand-film sur GitHub."
+  }
+ ]
+}

@@ -82,15 +82,15 @@
 <div id="stage">
   <!-- B: the usual way -->
   <div class="abs sec" id="sB">
-    <div class="abs label"><b>01</b><span>· the usual way</span></div>
-    <div class="abs title">Weeks of edits, <em>a brand that drifts.</em></div>
+    <div class="abs label"><b>01</b><span data-i18n="b-label">· the usual way</span></div>
+    <div class="abs title" data-i18n="b-title" data-fit>Weeks of edits, <em>a brand that drifts.</em></div>
     <div id="weeks"></div>
   </div>
 
   <!-- C: render(t) -->
   <div class="abs sec" id="sC">
-    <div class="abs label"><b>02</b><span>· the idea</span></div>
-    <div class="abs title">Every frame is <em>a function of time.</em></div>
+    <div class="abs label"><b>02</b><span data-i18n="c-label">· the idea</span></div>
+    <div class="abs title" data-i18n="c-title" data-fit>Every frame is <em>a function of time.</em></div>
     <div class="abs card" id="code"><pre><span class="c">// scene.html</span>
 <span class="k">function</span> render(t) {
   dot.x = ease(t) * 520;
@@ -104,39 +104,78 @@ render(<span id="tv">0.00</span>);</pre></div>
 
   <!-- D: voiced, then heard back -->
   <div class="abs sec" id="sD">
-    <div class="abs label"><b>03</b><span>· the voice</span></div>
-    <div class="abs title">Every line is <em>heard back.</em></div>
+    <div class="abs label"><b>03</b><span data-i18n="d-label">· the voice</span></div>
+    <div class="abs title" data-i18n="d-title" data-fit>Every line is <em>heard back.</em></div>
     <div id="takes"></div>
   </div>
 
   <!-- E: rendered, then checked -->
   <div class="abs sec" id="sE">
-    <div class="abs label"><b>04</b><span>· the render</span></div>
-    <div class="abs title">Rendered, then <em>checked.</em></div>
+    <div class="abs label"><b>04</b><span data-i18n="e-label">· the render</span></div>
+    <div class="abs title" data-i18n="e-title" data-fit>Rendered, then <em>checked.</em></div>
     <div id="strip"></div>
-    <div class="abs stat" id="st0" style="left:160px"><div class="v" id="frames">0</div><div class="k">of 1,440 frames</div></div>
-    <div class="abs stat" id="st1" style="left:700px"><div class="v">-16 LUFS</div><div class="k">the narration, normalized</div></div>
-    <div class="abs stat" id="st2" style="left:1300px"><div class="v">.vtt</div><div class="k">captions from the spoken words</div></div>
+    <div class="abs stat" id="st0" style="left:160px"><div class="v" id="frames">0</div><div class="k" data-i18n="e-frames">of 1,440 frames</div></div>
+    <div class="abs stat" id="st1" style="left:700px"><div class="v">-16 LUFS</div><div class="k" data-i18n="e-lufs">the narration, normalized</div></div>
+    <div class="abs stat" id="st2" style="left:1300px"><div class="v">.vtt</div><div class="k" data-i18n="e-vtt">captions from the spoken words</div></div>
   </div>
 
   <!-- A: opening card (late in the DOM so it covers the stage until it fades) -->
   <div class="abs" id="sA">
     <img src="assets/logo-on-stage.svg" alt="brand-film">
-    <div class="hl" style="top:400px">Brand films,</div>
-    <div class="hl" style="top:540px">made in <em>code.</em></div>
-    <div class="kick">a Claude Code skill · open source</div>
+    <div class="hl" style="top:400px" data-i18n="a-1">Brand films,</div>
+    <div class="hl" style="top:540px" data-i18n="a-2">made in <em>code.</em></div>
+    <div class="kick" data-i18n="a-kick">a Claude Code skill · open source</div>
   </div>
 
   <!-- L: end card -->
   <div class="abs" id="sL">
     <img src="assets/logo-on-card.svg" alt="brand-film">
-    <div class="hl" id="lH">Make the film <em>in code.</em></div>
-    <div class="sub" id="lSub">Your brand, your story, every name said right.</div>
+    <div class="hl" id="lH" data-i18n="l-head" data-fit>Make the film <em>in code.</em></div>
+    <div class="sub" id="lSub" data-i18n="l-sub">Your brand, your story, every name said right.</div>
     <div class="url" id="lUrl">github.com/davidscotttufts/brand-film</div>
   </div>
 </div>
 
 <script>
+// On-screen text in other languages (npm run render -- --lang es). Static text
+// is marked data-i18n="key"; text the script builds goes through T(key, en).
+const LANG = new URLSearchParams(location.search).get('lang');
+const STRINGS = {
+  es: {
+    'a-1': 'Películas de marca,', 'a-2': 'hechas en <em>código.</em>', 'a-kick': 'una skill de Claude Code · código abierto',
+    'b-label': '· lo de siempre', 'b-title': 'Semanas de ediciones, <em>una marca que se desvía.</em>',
+    'week': 'semana', 'export': 'exportación',
+    'c-label': '· la idea', 'c-title': 'Cada fotograma es <em>una función del tiempo.</em>', 'frame-of': 'fotograma {n} de 1440',
+    'd-label': '· la voz', 'd-title': 'Cada línea se <em>vuelve a escuchar.</em>', 'heard': 'oído ✓',
+    'heard-1': 'ElevenLabs pone voz a cada línea,', 'heard-2': 'ffmpeg mezcla la voz,', 'heard-3': 'una escena HTML,',
+    'e-label': '· el render', 'e-title': 'Renderizado, y luego <em>comprobado.</em>',
+    'e-frames': 'de 1440 fotogramas', 'e-lufs': 'la narración, normalizada', 'e-vtt': 'subtítulos de las palabras habladas',
+    'l-head': 'Haz la película <em>en código.</em>', 'l-sub': 'Tu marca, tu historia, cada nombre bien dicho.',
+  },
+};
+const T = (key, en) => STRINGS[LANG]?.[key] ?? en;
+for (const el of document.querySelectorAll('[data-i18n]')) {
+  const v = STRINGS[LANG]?.[el.dataset.i18n];
+  if (v != null) el.innerHTML = v;
+}
+// Single-line text that a translation can make too wide: shrink it to fit the
+// stage's safe area instead of clipping. Only elements marked data-fit shrink,
+// and only when they would overflow.
+function fitText() {
+  const max = 1920 - 2 * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--video-margin') || 160);
+  for (const el of document.querySelectorAll('[data-fit]')) {
+    el.style.fontSize = '';
+    const display = el.style.display;
+    el.style.display = 'inline-block'; // measure the text's own width (layout ignores visibility)
+    const w = el.scrollWidth;
+    el.style.display = display;
+    if (w > max) el.style.fontSize = `${(parseFloat(getComputedStyle(el).fontSize) * max / w).toFixed(1)}px`;
+  }
+}
+fitText();
+document.fonts?.ready.then(fitText);
+window.I18N_MISSING = LANG ? [...document.querySelectorAll('[data-i18n]')].map((el) => el.dataset.i18n).filter((k) => STRINGS[LANG]?.[k] == null) : [];
+
 const DURATION = 48.0;
 const FPS = 30;
 const POSTER_T = 2.0;
@@ -166,17 +205,15 @@ const CUE = {
 
 // The six weeks: each export's swatch is a different role, so the "brand"
 // colour visibly wanders. Roles only, no hex.
-const WEEKS = [
-  ['week 1', 'var(--video-accent)'], ['week 2', 'var(--video-accent-on-card)'], ['week 3', 'var(--video-stage-muted)'],
-  ['week 4', 'var(--video-card-faint)'], ['week 5', 'var(--video-stage-rule)'], ['week 6', 'var(--video-card-muted)'],
-];
+const WEEKS = ['var(--video-accent)', 'var(--video-accent-on-card)', 'var(--video-stage-muted)',
+  'var(--video-card-faint)', 'var(--video-stage-rule)', 'var(--video-card-muted)'].map((c, i) => [`${T('week', 'week')} ${i + 1}`, c]);
 const weekT = (i) => CUE.weeks + i * 0.42;
 
 // Three takes, each heard back with the brand terms it must contain.
 const TAKES = [
-  { id: 'take 1', heard: 'ElevenLabs voices each line,', chips: ['ElevenLabs'] },
-  { id: 'take 2', heard: 'ffmpeg mixes the voice,', chips: ['ffmpeg'] },
-  { id: 'take 3', heard: 'an HTML scene,', chips: ['HTML'] },
+  { id: 'take 1', heard: T('heard-1', 'ElevenLabs voices each line,'), chips: ['ElevenLabs'] },
+  { id: 'take 2', heard: T('heard-2', 'ffmpeg mixes the voice,'), chips: ['ffmpeg'] },
+  { id: 'take 3', heard: T('heard-3', 'an HTML scene,'), chips: ['HTML'] },
 ];
 const takeT = (i) => CUE.voices + i * 1.1;
 
@@ -209,12 +246,12 @@ function setO(el, o, dy = 0) {
 
 // Built once.
 $('weeks').innerHTML = WEEKS.map(([w, c], i) =>
-  `<div class="abs card wk" id="wk${i}" style="left:${160 + i * 272}px"><h4>export v${i + 1}</h4><div class="sw" style="background:${c}"></div><div class="ln"></div><div class="ln" style="width:70%"></div><div class="tag">${w}</div></div>`).join('');
+  `<div class="abs card wk" id="wk${i}" style="left:${160 + i * 272}px"><h4>${T('export', 'export')} v${i + 1}</h4><div class="sw" style="background:${c}"></div><div class="ln"></div><div class="ln" style="width:70%"></div><div class="tag">${w}</div></div>`).join('');
 // Waveform heights are a fixed function of the bar index: deterministic.
 const bars = (k) => Array.from({ length: 64 }, (_, j) => `<i style="height:${(10 + 46 * Math.abs(Math.sin(j * 0.55 + k) * Math.cos(j * 0.21 + k * 2))).toFixed(0)}px"></i>`).join('');
 $('takes').innerHTML = TAKES.map((tk, i) =>
   `<div class="abs card take" id="tk${i}" style="top:${370 + i * 180}px"><div class="id">${tk.id}</div><div class="wave" id="wv${i}">${bars(i)}</div>` +
-  `<div class="heard" id="hd${i}"></div>${tk.chips.map((c, j) => `<div class="chip" id="ch${i}" style="left:${640 + j * 220}px">${c}</div>`).join('')}<div class="ok" id="ok${i}">heard ✓</div></div>`).join('');
+  `<div class="heard" id="hd${i}"></div>${tk.chips.map((c, j) => `<div class="chip" id="ch${i}" style="left:${640 + j * 220}px">${c}</div>`).join('')}<div class="ok" id="ok${i}">${T('heard', 'heard ✓')}</div></div>`).join('');
 $('strip').innerHTML = Array.from({ length: STRIP }, (_, i) =>
   `<div class="abs fr" id="fr${i}" style="left:${160 + i * 134}px"><i style="left:${(6 + i * 6.5).toFixed(0)}px"></i></div>`).join('');
 
@@ -233,7 +270,7 @@ function renderBase(t) {
   $('tv').textContent = tt.toFixed(2);
   $('dot').style.left = (40 + 560 * ease(k)) + 'px';
   $('head').style.left = (754 * k) + 'px';
-  $('frameLbl').textContent = `frame ${Math.round(1440 * k).toLocaleString('en-US')} of 1,440`;
+  $('frameLbl').textContent = LANG ? T('frame-of', '').replace('{n}', Math.round(1440 * k)) : `frame ${Math.round(1440 * k).toLocaleString('en-US')} of 1,440`;
   setO($('frameBox'), ramp(t, 14.6, 15.2));
 
   // D: each take's waveform lands, then what was heard types in, then its term is ticked.
@@ -249,7 +286,7 @@ function renderBase(t) {
   // E: the frame strip fills as frames render; the counter reaches the real total.
   setO($('sE'), win(t, 31.6, 32.2, 40.4, 41.0));
   for (let i = 0; i < STRIP; i++) setO($('fr' + i), ramp(t, CUE.renders + i * 0.18, CUE.renders + i * 0.18 + 0.3), 16);
-  $('frames').textContent = Math.round(1440 * ramp(t, CUE.renders, CUE.renders + 2.4)).toLocaleString('en-US');
+  $('frames').textContent = Math.round(1440 * ramp(t, CUE.renders, CUE.renders + 2.4)).toLocaleString(LANG || 'en-US');
   setO($('st0'), ramp(t, CUE.renders, CUE.renders + 0.5), 20);
   setO($('st1'), ramp(t, CUE.ffmpeg, CUE.ffmpeg + 0.5), 20);
   setO($('st2'), ramp(t, CUE.captions, CUE.captions + 0.5), 20);

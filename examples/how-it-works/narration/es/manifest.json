@@ -1,0 +1,542 @@
+{
+  "language": "es",
+  "model": "eleven_v4",
+  "voice": {
+    "id": "iDEmt5MnqUotdwCIVplo",
+    "name": "Enrique Mondragón - Elegant and Dynamic (es-MX)"
+  },
+  "captionReplace": {
+    "efe efe eme peg": "ffmpeg",
+    "hache te eme ele": "HTML",
+    "Guit Hab": "GitHub",
+    "brand film": "brand-film",
+    "Eleven Labs": "ElevenLabs"
+  },
+  "takes": [
+    {
+      "id": "a-open",
+      "at": 0.8,
+      "until": 5.4,
+      "speak": "Esta película la hizo un guion, no un editor.",
+      "file": "narration/es/a-open.4f048a906c26.mp3",
+      "duration": 3.6,
+      "words": [
+        {
+          "text": "Esta",
+          "start": 0.8,
+          "end": 1.04
+        },
+        {
+          "text": "película",
+          "start": 1.12,
+          "end": 1.6
+        },
+        {
+          "text": "la",
+          "start": 1.68,
+          "end": 1.84
+        },
+        {
+          "text": "hizo",
+          "start": 1.88,
+          "end": 2.16
+        },
+        {
+          "text": "un",
+          "start": 2.24,
+          "end": 2.4
+        },
+        {
+          "text": "guion,",
+          "start": 2.48,
+          "end": 3.2
+        },
+        {
+          "text": "no",
+          "start": 3.28,
+          "end": 3.44
+        },
+        {
+          "text": "un",
+          "start": 3.52,
+          "end": 3.6
+        },
+        {
+          "text": "editor.",
+          "start": 3.88,
+          "end": 4.4
+        }
+      ]
+    },
+    {
+      "id": "b-drift",
+      "at": 6.2,
+      "until": 13.2,
+      "speak": "Los videos explicativos llevan semanas de ediciones, y la marca se desvía con cada una.",
+      "file": "narration/es/b-drift.ffdeec5d9477.mp3",
+      "duration": 6.16,
+      "words": [
+        {
+          "text": "Los",
+          "start": 6.2,
+          "end": 6.36
+        },
+        {
+          "text": "videos",
+          "start": 6.44,
+          "end": 6.76
+        },
+        {
+          "text": "explicativos",
+          "start": 6.88,
+          "end": 7.64
+        },
+        {
+          "text": "llevan",
+          "start": 7.72,
+          "end": 8.04
+        },
+        {
+          "text": "semanas",
+          "start": 8.12,
+          "end": 8.76
+        },
+        {
+          "text": "de",
+          "start": 8.8,
+          "end": 8.84
+        },
+        {
+          "text": "ediciones,",
+          "start": 8.92,
+          "end": 9.88
+        },
+        {
+          "text": "y",
+          "start": 9.92,
+          "end": 9.96
+        },
+        {
+          "text": "la",
+          "start": 10,
+          "end": 10.04
+        },
+        {
+          "text": "marca",
+          "start": 10.12,
+          "end": 10.52
+        },
+        {
+          "text": "se",
+          "start": 10.6,
+          "end": 10.68
+        },
+        {
+          "text": "desvía",
+          "start": 10.8,
+          "end": 11.16
+        },
+        {
+          "text": "con",
+          "start": 11.24,
+          "end": 11.4
+        },
+        {
+          "text": "cada",
+          "start": 11.48,
+          "end": 11.72
+        },
+        {
+          "text": "una.",
+          "start": 11.8,
+          "end": 12.36
+        }
+      ]
+    },
+    {
+      "id": "c-frame",
+      "at": 14,
+      "until": 21.6,
+      "speak": "brand film escribe la película como una escena hache te eme ele: cada fotograma, una función del tiempo.",
+      "file": "narration/es/c-frame.c80c17d48687.mp3",
+      "duration": 7.44,
+      "words": [
+        {
+          "text": "brand",
+          "start": 14,
+          "end": 14.32
+        },
+        {
+          "text": "film",
+          "start": 14.4,
+          "end": 14.72
+        },
+        {
+          "text": "escribe",
+          "start": 14.8,
+          "end": 15.2
+        },
+        {
+          "text": "la",
+          "start": 15.24,
+          "end": 15.28
+        },
+        {
+          "text": "película",
+          "start": 15.36,
+          "end": 15.84
+        },
+        {
+          "text": "como",
+          "start": 15.96,
+          "end": 16.08
+        },
+        {
+          "text": "una",
+          "start": 16.16,
+          "end": 16.32
+        },
+        {
+          "text": "escena",
+          "start": 16.44,
+          "end": 16.8
+        },
+        {
+          "text": "hache",
+          "start": 16.88,
+          "end": 17.2
+        },
+        {
+          "text": "te",
+          "start": 17.28,
+          "end": 17.44
+        },
+        {
+          "text": "eme",
+          "start": 17.52,
+          "end": 17.76
+        },
+        {
+          "text": "ele:",
+          "start": 17.84,
+          "end": 18.56
+        },
+        {
+          "text": "cada",
+          "start": 18.64,
+          "end": 18.8
+        },
+        {
+          "text": "fotograma,",
+          "start": 18.88,
+          "end": 19.76
+        },
+        {
+          "text": "una",
+          "start": 19.84,
+          "end": 19.92
+        },
+        {
+          "text": "función",
+          "start": 20.08,
+          "end": 20.56
+        },
+        {
+          "text": "del",
+          "start": 20.6,
+          "end": 20.64
+        },
+        {
+          "text": "tiempo.",
+          "start": 20.8,
+          "end": 21.44
+        }
+      ]
+    },
+    {
+      "id": "d-voice",
+      "at": 22.8,
+      "until": 30.8,
+      "speak": "Eleven Labs pone voz a cada línea y luego la escucha, para comprobar que cada nombre se dijo bien.",
+      "file": "narration/es/d-voice.bdd2cb640bae.mp3",
+      "duration": 6.4,
+      "words": [
+        {
+          "text": "Eleven",
+          "start": 22.8,
+          "end": 23.2
+        },
+        {
+          "text": "Labs",
+          "start": 23.28,
+          "end": 23.6
+        },
+        {
+          "text": "pone",
+          "start": 23.68,
+          "end": 23.92
+        },
+        {
+          "text": "voz",
+          "start": 24,
+          "end": 24.24
+        },
+        {
+          "text": "a",
+          "start": 24.32,
+          "end": 24.4
+        },
+        {
+          "text": "cada",
+          "start": 24.48,
+          "end": 24.72
+        },
+        {
+          "text": "línea",
+          "start": 24.8,
+          "end": 25.28
+        },
+        {
+          "text": "y",
+          "start": 25.32,
+          "end": 25.36
+        },
+        {
+          "text": "luego",
+          "start": 25.44,
+          "end": 25.68
+        },
+        {
+          "text": "la",
+          "start": 25.72,
+          "end": 25.76
+        },
+        {
+          "text": "escucha,",
+          "start": 25.84,
+          "end": 26.56
+        },
+        {
+          "text": "para",
+          "start": 26.64,
+          "end": 26.72
+        },
+        {
+          "text": "comprobar",
+          "start": 26.8,
+          "end": 27.28
+        },
+        {
+          "text": "que",
+          "start": 27.4,
+          "end": 27.52
+        },
+        {
+          "text": "cada",
+          "start": 27.56,
+          "end": 27.76
+        },
+        {
+          "text": "nombre",
+          "start": 27.84,
+          "end": 28.16
+        },
+        {
+          "text": "se",
+          "start": 28.24,
+          "end": 28.32
+        },
+        {
+          "text": "dijo",
+          "start": 28.4,
+          "end": 28.64
+        },
+        {
+          "text": "bien.",
+          "start": 28.68,
+          "end": 29.2
+        }
+      ]
+    },
+    {
+      "id": "e-render",
+      "at": 32,
+      "until": 40,
+      "speak": "Chrome sin interfaz dibuja cada fotograma, y efe efe eme peg mezcla la voz, la música y los subtítulos.",
+      "file": "narration/es/e-render.258795a43a60.mp3",
+      "duration": 7.84,
+      "words": [
+        {
+          "text": "Chrome",
+          "start": 32,
+          "end": 32.4
+        },
+        {
+          "text": "sin",
+          "start": 32.48,
+          "end": 32.56
+        },
+        {
+          "text": "interfaz",
+          "start": 32.72,
+          "end": 33.2
+        },
+        {
+          "text": "dibuja",
+          "start": 33.28,
+          "end": 33.76
+        },
+        {
+          "text": "cada",
+          "start": 33.8,
+          "end": 34.08
+        },
+        {
+          "text": "fotograma,",
+          "start": 34.16,
+          "end": 35.12
+        },
+        {
+          "text": "y",
+          "start": 35.2,
+          "end": 35.36
+        },
+        {
+          "text": "efe",
+          "start": 35.44,
+          "end": 35.68
+        },
+        {
+          "text": "efe",
+          "start": 35.76,
+          "end": 36
+        },
+        {
+          "text": "eme",
+          "start": 36.08,
+          "end": 36.32
+        },
+        {
+          "text": "peg",
+          "start": 36.4,
+          "end": 36.64
+        },
+        {
+          "text": "mezcla",
+          "start": 36.88,
+          "end": 37.28
+        },
+        {
+          "text": "la",
+          "start": 37.32,
+          "end": 37.36
+        },
+        {
+          "text": "voz,",
+          "start": 37.44,
+          "end": 37.92
+        },
+        {
+          "text": "la",
+          "start": 38,
+          "end": 38.08
+        },
+        {
+          "text": "música",
+          "start": 38.16,
+          "end": 38.72
+        },
+        {
+          "text": "y",
+          "start": 38.76,
+          "end": 38.8
+        },
+        {
+          "text": "los",
+          "start": 38.88,
+          "end": 38.96
+        },
+        {
+          "text": "subtítulos.",
+          "start": 39.08,
+          "end": 39.84
+        }
+      ]
+    },
+    {
+      "id": "l-end",
+      "at": 41,
+      "until": 47.2,
+      "speak": "Tu marca, tu historia, hechas en código. Encuentra brand film en Guit Hab.",
+      "file": "narration/es/l-end.96799ec40859.mp3",
+      "duration": 5.68,
+      "words": [
+        {
+          "text": "Tu",
+          "start": 41,
+          "end": 41.08
+        },
+        {
+          "text": "marca,",
+          "start": 41.16,
+          "end": 41.8
+        },
+        {
+          "text": "tu",
+          "start": 41.84,
+          "end": 41.88
+        },
+        {
+          "text": "historia,",
+          "start": 42.08,
+          "end": 42.76
+        },
+        {
+          "text": "hechas",
+          "start": 42.88,
+          "end": 43.24
+        },
+        {
+          "text": "en",
+          "start": 43.32,
+          "end": 43.48
+        },
+        {
+          "text": "código.",
+          "start": 43.613,
+          "end": 44.28
+        },
+        {
+          "text": "Encuentra",
+          "start": 44.4,
+          "end": 44.84
+        },
+        {
+          "text": "brand",
+          "start": 44.92,
+          "end": 45.16
+        },
+        {
+          "text": "film",
+          "start": 45.24,
+          "end": 45.64
+        },
+        {
+          "text": "en",
+          "start": 45.76,
+          "end": 45.88
+        },
+        {
+          "text": "Guit",
+          "start": 45.96,
+          "end": 46.12
+        },
+        {
+          "text": "Hab.",
+          "start": 46.16,
+          "end": 46.68
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+ "$comment": "The es translation of narration.json, one entry per take. Translate `source` into `text`: same meaning and facts, plain spoken sentences, about the same length (a voiced take must fit its scene's window). Keep brand names as the brand writes them; how they are SPOKEN in es goes in brand-tokens.json brand.pronunciations with \"lang\": \"es\". Never edit `source` or `sourceHash`: npm run translate keeps them in step, and marks a take `stale` when its source line changes. Delete `stale` once `text` is re-translated.",
+ "language": "es",
+ "mode": "voice",
+ "voice": {
+  "id": "iDEmt5MnqUotdwCIVplo",
+  "name": "Enrique Mondragón - Elegant and Dynamic (es-MX)"
+ },
+ "takes": [
+  {
+   "id": "a-open",
+   "source": "This film was made by a script, not an editor.",
+   "sourceHash": "5130b47f8ba2",
+   "text": "Esta película la hizo un guion, no un editor."
+  },
+  {
+   "id": "b-drift",
+   "source": "Explainer videos take weeks of edits, and the brand drifts with every one.",
+   "sourceHash": "87dd1e18c020",
+   "text": "Los videos explicativos llevan semanas de ediciones, y la marca se desvía con cada una."
+  },
+  {
+   "id": "c-frame",
+   "source": "brand-film writes the film as an HTML scene, where every frame is a function of time.",
+   "sourceHash": "9cdfa1dd866a",
+   "text": "brand-film escribe la película como una escena HTML: cada fotograma, una función del tiempo."
+  },
+  {
+   "id": "d-voice",
+   "source": "ElevenLabs voices each line, then listens back to check every name was said right.",
+   "sourceHash": "96aaa2668005",
+   "text": "ElevenLabs pone voz a cada línea y luego la escucha, para comprobar que cada nombre se dijo bien."
+  },
+  {
+   "id": "e-render",
+   "source": "Headless Chrome renders each frame, and ffmpeg mixes the voice, music and captions.",
+   "sourceHash": "901392c9d5ec",
+   "text": "Chrome sin interfaz dibuja cada fotograma, y ffmpeg mezcla la voz, la música y los subtítulos."
+  },
+  {
+   "id": "l-end",
+   "source": "Your brand, your story, made in code. Find brand-film on GitHub.",
+   "sourceHash": "c961344df153",
+   "text": "Tu marca, tu historia, hechas en código. Encuentra brand-film en GitHub."
+  }
+ ]
+}
