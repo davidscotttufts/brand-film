@@ -207,10 +207,11 @@ console.log(`\n[render] wrote out/${film.basename}.{mp4,en.vtt} and the poster (
 // render once stopped after 435 frames with a clean exit. The frame count must
 // equal DURATION × FPS; with sound, the mix should sit near -16 LUFS with the
 // true peak under -1 dBTP. The numbers go to out/<basename>.report.json.
-// -progress writes machine-readable key=value lines on every platform; the
-// human progress line on stderr is not printed when stderr is not a terminal.
-const probe = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-progress', 'pipe:1', '-i', mp4, '-map', '0:v', '-c', 'copy', '-f', 'null', '-'], { encoding: 'utf8' });
-const counted = Number([...(probe.stdout ?? '').matchAll(/^frame=(\d+)$/gm)].pop()?.[1] ?? NaN);
+// framecrc prints one line per video packet (one per frame here), with no
+// decoding, on every ffmpeg build. Progress output is not reliable for this:
+// some Linux builds print no frame count for a stream copy at all.
+const probe = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-map', '0:v', '-c', 'copy', '-f', 'framecrc', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const counted = probe.status === 0 ? (probe.stdout ?? '').split('\n').filter((l) => /^\d/.test(l)).length : NaN;
 const report = { basename: film.basename, duration, fps, frames: counted, expectedFrames: frames, audio: audioOut[0] !== '-an', voice: lines.length > 0, captions: cues.length };
 if (report.audio) {
   const r = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
