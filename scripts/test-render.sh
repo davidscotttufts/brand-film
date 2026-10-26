@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016  # the single-quoted node -e blocks are JavaScript, not shell
 # The full render test: scaffold the template into a temporary folder, render
 # it silent (no ElevenLabs account), and check the report. Then render the
 # example from its committed sources (audio absent, so silent with captions).
@@ -10,7 +11,6 @@ trap 'rm -rf "$tmp"' EXIT
 
 check() { # <film dir> <basename> <expected frames>
   local r="$1/out/$2.report.json"
-  # shellcheck disable=SC2016  # the single-quoted text is a JavaScript program, not shell
   node -e '
     const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
     const want = Number(process.argv[2]);
