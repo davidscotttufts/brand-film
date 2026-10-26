@@ -43,8 +43,9 @@ almost the brand's. brand-film checks each of those:
   exact colours (with WCAG contrast checked), typefaces, official logo files,
   narrator and lexicon. Scenes use only `var(--video-*)` tokens.
 - **Verified, not assumed.** The render counts the frames in the finished file,
-  measures loudness and true peak, and checks that every load-bearing fact still
-  appears in its source.
+  measures loudness and true peak, checks that every spoken word made it into
+  the final mix, and checks that every load-bearing fact still appears in its
+  source.
 
 ## Install
 

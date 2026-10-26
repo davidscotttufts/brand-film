@@ -24,6 +24,17 @@ bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/film
 (cd "$tmp/film" && node lint.mjs && node render.mjs)
 check "$tmp/film" fixture 780
 
+# The full mix with no account: synthetic takes (the last ending just before
+# the film does) and a score, so the ducking and the spoken-word check run.
+bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/voiced" voiced
+node "$root/scripts/fake-narration.mjs" "$tmp/voiced"
+(cd "$tmp/voiced" && node render.mjs)
+check "$tmp/voiced" voiced 780
+node -e '
+  const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  if (!r.voice || !r.spokenWords || r.spokenWords.lost.length) { console.error("spoken-word check did not pass:", JSON.stringify(r.spokenWords)); process.exit(1); }
+  console.log(`ok all ${r.spokenWords.checked} synthetic words are in the mix`);' "$tmp/voiced/out/voiced.report.json"
+
 ex="$root/examples/how-it-works"
 (cd "$ex" && npm install --silent && node tokens.mjs --check && node lint.mjs && node sfx.mjs && node render.mjs)
 check "$ex" how-it-works 1440

@@ -29,6 +29,10 @@ Users review a film in bursts: "there are more changes, don't re-render yet".
   fails unless they equal DURATION × 30 (a headless Chrome render once stopped
   after 435 frames with a clean exit). The numbers are in
   `out/<basename>.report.json`.
+- Every spoken word: the render measures each word in the finished film
+  against the same word in its take's own audio, and fails if the mix lost any
+  (`lib/audiocheck.mjs`). This is what catches a voice cut off at the end of the
+  film, which no take-level check can see.
 - Streams and duration: `ffmpeg -i out/x.mp4` (stereo AAC, the right length).
 - Loudness: printed by render (≈ -16 LUFS, peak < -1 dBTP).
 - Frames from the FINISHED file at the moments that changed:

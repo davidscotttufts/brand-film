@@ -3,14 +3,14 @@
   "owner": { "name": "David Tufts", "url": "https://github.com/davidscotttufts" },
   "metadata": {
     "description": "Narrated brand films from HTML, ElevenLabs voice and ffmpeg, with a pronunciation lexicon and a speech-to-text check on every take.",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "brand-film",
       "source": "./plugins/brand-film",
       "description": "Make a narrated, on-brand explainer film (MP4, poster, captions) from a deck, a document or a story.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "media",
       "keywords": ["video", "film", "elevenlabs", "narration", "brand", "explainer", "captions"]
     }

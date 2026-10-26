@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.1
+
+- **Fix: the end of the narration was cut off in films with music.** The voice
+  bus was split for the music's ducking key with only the key branch padded,
+  and the last ~3 s of loudnorm's look-ahead never reached the mix, so the
+  final words of the last take were lost (2.5–3 s of the example film). Every
+  bus is now padded and trimmed to the film's length before it is split or
+  mixed.
+- **New check: every spoken word must be in the finished film.** The render
+  compares each word's level in the mix with the same word in its take, and
+  fails if any was lost (`lib/audiocheck.mjs`, results in the report).
+- CI now renders a film with synthetic narration and a score, so the full mix
+  and the word check run on every change without an ElevenLabs account.
+- The example film is re-rendered with the fix.
+
 ## 1.0.0
 
 First public release.

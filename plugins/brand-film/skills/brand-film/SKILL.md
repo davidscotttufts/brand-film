@@ -128,8 +128,7 @@ clipping, wraps, ghosts and timing; fix; repeat.
 
 Share the contact sheet and the key stills with each scene's line (SendUserFile,
 or a small artifact of frames). On a yes: `npm run render` (minutes; run it in
-the background for a long film). It fails on a wrong frame count and writes
-`out/<basename>.report.json`. Then finish the review per
+the background for a long film). It fails on a wrong frame count or on any spoken word missing from the finished mix, and writes `out/<basename>.report.json`. Then finish the review per
 `references/review-and-delivery.md`: stereo AAC, about -16 LUFS / peak under
 -1 dBTP, frames pulled from the finished MP4, captions spelled right. Ask the
 user to listen for tone and the music level; the listening check covers words,

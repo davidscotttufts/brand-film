@@ -17,6 +17,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
+import { checkSpokenWords } from './lib/audiocheck.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const film = JSON.parse(readFileSync(join(here, 'film.json'), 'utf8'));
@@ -154,22 +155,24 @@ if (lines.length || effects.length || music) {
   const buses = [];
   if (lines.length) {
     lines.forEach((l, i) => graph.push(`[${i + 1}:a]adelay=${Math.round(l.at * 1000)}:all=1[a${i}]`));
-    graph.push(`${lines.map((_, i) => `[a${i}]`).join('')}amix=inputs=${lines.length}:normalize=0:dropout_transition=0,loudnorm=I=-16:TP=-1.5:LRA=11,aformat=channel_layouts=stereo,asplit=2[voice][vsc]`);
+    // Every bus is padded and trimmed to the film's exact length BEFORE it is
+    // split or mixed, so all of them end together at DURATION. Splitting the
+    // voice first and padding only the ducking key's branch lost the last ~3 s
+    // of the last take: loudnorm's look-ahead never flushed into the mix. The
+    // spoken-word check after the render fails the film if that ever recurs.
+    graph.push(`${lines.map((_, i) => `[a${i}]`).join('')}amix=inputs=${lines.length}:normalize=0:dropout_transition=0,loudnorm=I=-16:TP=-1.5:LRA=11,aformat=channel_layouts=stereo,apad,atrim=0:${duration},asplit=2[voice][vsc]`);
     buses.push('[voice]');
   }
   if (effects.length) {
     effects.forEach((e, i) => graph.push(`[${lines.length + i + 1}:a]aresample=44100,volume=${e.gain}dB,adelay=${Math.round(e.at * 1000)}:all=1[s${i}]`));
-    graph.push(`${effects.map((_, i) => `[s${i}]`).join('')}amix=inputs=${effects.length}:normalize=0:dropout_transition=0,aformat=channel_layouts=stereo[fx]`);
+    graph.push(`${effects.map((_, i) => `[s${i}]`).join('')}amix=inputs=${effects.length}:normalize=0:dropout_transition=0,aformat=channel_layouts=stereo,apad,atrim=0:${duration}[fx]`);
     buses.push('[fx]');
   }
   if (music) {
     const mi = lines.length + effects.length + 1;
-    graph.push(`[${mi}:a]aresample=44100,aformat=channel_layouts=stereo,volume=${MUSIC_DB}dB,afade=t=in:st=0:d=1.5,afade=t=out:st=${duration - 2.5}:d=2.5[mraw]`);
+    graph.push(`[${mi}:a]aresample=44100,aformat=channel_layouts=stereo,volume=${MUSIC_DB}dB,apad,atrim=0:${duration},afade=t=in:st=0:d=1.5,afade=t=out:st=${duration - 2.5}:d=2.5[mraw]`);
     if (lines.length) {
-      // Pad the sidechain with silence: sidechaincompress stops when its
-      // control input ends, which would cut the score off after the last line.
-      graph.push(`[vsc]apad[vscp]`);
-      graph.push(`[mraw][vscp]sidechaincompress=threshold=0.03:ratio=5:attack=40:release=600[music]`);
+      graph.push(`[mraw][vsc]sidechaincompress=threshold=0.03:ratio=5:attack=40:release=600[music]`);
     } else {
       graph.push(`[mraw]anull[music]`);
     }
@@ -222,6 +225,18 @@ if (report.audio) {
 }
 writeFileSync(join(out, `${film.basename}.report.json`), JSON.stringify(report, null, 2) + '\n');
 if (counted !== frames) { console.error(`[render] FAIL the file has ${counted} frames, expected ${frames}`); process.exit(1); }
+// Every spoken word must be in the finished film (lib/audiocheck.mjs).
+if (report.voice) {
+  const voiced = { ...narration, takes: narration.takes.filter((t) => lines.includes(t)) };
+  const spoken = checkSpokenWords({ ffmpegPath, mp4, manifest: voiced, dir: here });
+  report.spokenWords = { checked: spoken.words, medianGainDb: +spoken.medianGainDb.toFixed(1), lost: spoken.lost.map((l) => `${l.take}: "${l.word}" at ${l.at}s`) };
+  writeFileSync(join(out, `${film.basename}.report.json`), JSON.stringify(report, null, 2) + '\n');
+  if (spoken.lost.length) {
+    console.error(`[render] FAIL ${spoken.lost.length} spoken word(s) are missing from the finished film: ${spoken.lost.map((l) => `"${l.word}" at ${l.at}s`).join(', ')}`);
+    process.exit(1);
+  }
+  console.log(`[render] all ${spoken.words} spoken words are in the mix`);
+}
 if (report.voice && !(report.lufs > -18 && report.lufs < -14)) console.warn(`[render] the mix is ${report.lufs} LUFS; expected about -16`);
 if (report.audio && report.truePeakDbtp > -1) console.warn(`[render] true peak ${report.truePeakDbtp} dBTP is over -1`);
 console.log(`[render] verified: ${counted} frames, ${cues.length} caption cues${report.audio ? ', stereo AAC' : ', silent'}`);

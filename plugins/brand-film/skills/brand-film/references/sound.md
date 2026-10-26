@@ -75,6 +75,10 @@ last seconds.
   `sidechaincompress` keyed on the voice. The sidechain key is padded with
   `apad`: without it the compressor stops when the last line ends and the score
   is cut off under the end card.
+- Every bus is padded and trimmed to the film's exact length before it is
+  split or mixed, so they all end together. (Splitting the voice for the
+  ducking key and padding only that branch once lost the last ~3 s of the last
+  take: loudnorm's look-ahead never reached the mix.)
 - Sum through `alimiter`, AAC 192k, 44.1 kHz stereo.
 - Force stereo on every bus (`aformat=channel_layouts=stereo`); one mono input
   made a mono film once.
