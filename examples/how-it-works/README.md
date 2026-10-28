@@ -32,7 +32,9 @@ It shows both translation modes (`references/translation.md`):
 
 The Spanish pronunciation rules are in `brand-tokens.json` with `"lang": "es"`
 (letter names said the Spanish way), and its record is `takes.lock.es.json`.
-The translations were written by Claude and have not had a native review.
+The translations were written by Claude. The Spanish film (narrator, on-screen
+text and captions) was reviewed and approved by the author on 2026-10-27; the
+French captions have not had a native review.
 
 ## Rebuild it
 
