@@ -29,8 +29,8 @@
 // and stops if that is more than FILM_MAX_CHARS (when set) or more than the
 // account has left. Cached takes cost nothing.
 //
-// Outputs: narration/<take>.<hash>.mp3 and its alignment (cached; the mp3s are
-// not committed), narration/manifest.json (word timings; render.mjs reads it
+// Outputs: narration/<take>.<hash>.mp3 and its alignment (cached and
+// committed: a re-voice is a different read), narration/manifest.json (word timings; render.mjs reads it
 // and the scene's cue times are copied from it) and takes.lock.json, the
 // committed record of how every take was made: model, voice, settings, the
 // exact text sent, the check's result, and the plan it was generated under.

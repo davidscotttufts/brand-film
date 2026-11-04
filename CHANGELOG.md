@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.0
+
+- **A film folder now commits its final audio.** The template's `.gitignore`
+  keeps `narration/*.mp3` (with each take's `.verify.json` and
+  `.alignment.json`) and `music/*.mp3`. ElevenLabs v3/v4 take no seed, so the
+  lock files record how a take was made but cannot reproduce it: a re-voice is
+  a different read and costs credits. With the audio committed, a clone
+  re-renders for free. A public project can opt out; the `.gitignore` says how.
+- **Fix: `lib/` went missing in projects that ignore `lib/`.** Many repositories
+  ignore `lib/` as build output, which silently dropped the film's helper
+  modules, so a fresh clone could not run `tokens`, `narrate` or `render`
+  (`Cannot find module ./lib/lexicon.mjs`). The template's `.gitignore`
+  re-includes it with `!lib/`.
+
 ## 1.1.0
 
 - **Translations**, per language, in one of two modes:

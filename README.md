@@ -38,7 +38,8 @@ almost the brand's. brand-film checks each of those:
 - **A record of how it was made.** `takes.lock.json` keeps the model, voice,
   settings, the exact text sent, each check's transcript and score, and the
   ElevenLabs plan each take was generated on, which decides whether you may use
-  it commercially. The audio itself is never committed.
+  it commercially. The final audio is committed beside it, since a re-voice
+  is never the same read (a public project can opt out in `.gitignore`).
 - **The brand is copied, never approximated.** One `brand-tokens.json` holds the
   exact colours (with WCAG contrast checked), typefaces, official logo files,
   narrator and lexicon. Scenes use only `var(--video-*)` tokens.
@@ -127,7 +128,8 @@ headless Chrome, frame by frame ─▶ ffmpeg (voice -16 LUFS, effects, ducked s
 
 A film is a folder you own, not a project file in an editor: `scene.html`,
 `narration.json`, `brand-tokens.json`, `music.json`, `film.json`, the scripts,
-and the lock files. Rebuild it any time; only changed takes cost credits.
+the lock files and the final audio. Rebuild it any time; only changed takes cost
+credits.
 
 ## Costs
 
