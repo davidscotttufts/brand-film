@@ -8,9 +8,11 @@ Thanks for helping. A few things keep this project dependable.
   render test is `npm run test:render` (needs Chrome or `npx playwright install chromium`).
 - **The template is the source of truth.** `examples/how-it-works` holds copies
   of the template's scripts; after changing one, run `npm run sync-example`.
-- **No media in git.** Audio, video and rendered frames are generated. Commit
-  sources and the lock files (`takes.lock.json`, `music.lock.json`), never
-  `*.mp3`, `*.wav` or `*.mp4`. CI fails on them.
+- **No media in this repository.** Audio, video and rendered frames are
+  generated. Commit sources and the lock files (`takes.lock.json`,
+  `music.lock.json`), never `*.mp3`, `*.wav` or `*.mp4`; the root `.gitignore`
+  keeps the example's audio out. (A film folder in a user's own project is
+  different: its template `.gitignore` commits the final audio.)
 - **No keys, no private names.** CI runs a secret scan.
 - **Sign off your commits** (`git commit -s`, the Developer Certificate of Origin).
 - **A change to behaviour gets a test** that fails without the change.

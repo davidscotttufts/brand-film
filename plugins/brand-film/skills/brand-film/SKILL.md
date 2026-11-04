@@ -142,9 +142,13 @@ not delivery.
 Per `references/review-and-delivery.md`: the MP4, poster and captions; the
 narration in the deck's speaker notes as `FILM NARRATION (m:ss):`; Google Slides
 insertion steps; or the `<video>` + captions markup for a page. Write the film
-folder's README (the template's `README.md` is the start). Commit the sources
-and the lock files (`takes.lock.json`, `music.lock.json`), not the audio or
-`out/`.
+folder's README (the template's `README.md` is the start). Commit the sources,
+the lock files (`takes.lock.json`, `music.lock.json`) and the final audio
+(`narration/` and `music/`): ElevenLabs takes no seed, so a re-voice is a
+different read, and committed audio lets any clone re-render for free. Leave
+out `out/`, `preview/` and `sfx/*.wav` (rebuilt free). In a public repository,
+ask the user before committing the voice; the template's `.gitignore` says how
+to keep it out.
 
 ## Step 7b: Other languages
 

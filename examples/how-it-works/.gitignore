@@ -1,13 +1,20 @@
-# Generated. The audio is never committed: narration/manifest.json (word
-# timings), takes.lock.json and music.lock.json record how it was made, and a
-# render without it is silent but keeps its captions.
+# A film folder commits its sources, its lock files AND its final audio:
+# narration/*.mp3 with each take's .verify.json and .alignment.json, and
+# music/*.mp3. ElevenLabs v3/v4 take no seed, so a re-voiced take is a
+# different read and a recomposed score a different piece: the lock files
+# record how the audio was made but cannot bring it back, and re-making it
+# costs credits. With the audio committed, any clone re-renders or edits a
+# scene for free (npm run narrate voices nothing).
+#
+# Keeping audio out of a public repository? Add narration/*.mp3,
+# narration/*.verify.json and music/*.mp3 here; renders then come out silent
+# (captions kept) until npm run narrate and npm run music are re-run.
 node_modules/
 out/
 preview/
 auditions/
 brand-tokens.resolved.json
-narration/*.mp3
-narration/*.verify.json
-music/*.mp3
 .env
 sfx/*.wav
+# Many projects ignore lib/ as build output; these are the film's sources.
+!lib/

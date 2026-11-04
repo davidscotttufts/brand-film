@@ -176,9 +176,9 @@ const effects = sfxCues.map(([at, id, gain]) => {
   return false;
 });
 
-// A fresh clone has the manifests (word timings, captions) but not the audio,
-// which is generated and never committed. Missing audio renders silent, with
-// the same captions, and says so.
+// The audio is committed (see .gitignore), but a project may keep it out, and
+// a clone may predate it. Missing audio renders silent, with the same
+// captions, and says so.
 const lines = (narration ? narration.takes : []).filter((l) => {
   if (existsSync(join(here, l.file))) return true;
   console.warn(`[render] ${l.file} is missing (run npm run narrate); that line renders silent`);
