@@ -20,6 +20,7 @@ by frame and the bundled ffmpeg encodes it. Scaffolded by the
 | `score.mjs`, `lesson.mjs`, `status.mjs` | the script's checklist score; add a house-style note; where the film stands and the next command |
 | `source.mjs` | a web page as the source: `source.txt`, its media list, and `source.lock.json` |
 | `clips.json`, `clips.mjs` | footage with its licence, as frame sequences in `clips/`; `media.lock.json` records each clip's source and licence |
+| `find.mjs` | searches Wikimedia Commons, Openverse, Unsplash, Pexels and Pixabay with each licence read from the library; `--add` puts a result in clips.json |
 | `shots.mjs`, `study.mjs` | a video's shots and contact sheet; a brand's existing videos measured |
 | `blender/turntable.py` | a 3D clip in the brand's accent (Blender) |
 | `lib/gfx.js` | the graphics kit the scene uses: counters, charts, title cards, lower thirds, typing, clips |
@@ -35,6 +36,7 @@ npm run tokens             # check the brand, write brand-tokens.css
 npm run source -- <url>    # a web page as the source (optional)
 npm run lint               # check the narration (no API)
 npm run score              # the script's checklist, out of 10
+npm run find -- "<shot>"   # stock or Creative Commons pictures and footage (optional)
 npm run clips              # footage, if clips.json lists any
 npm run narrate            # voices only changed takes, and listens to each
                            #   (or: npm run narrate -- --recorded vo.m4a, a person's own read)

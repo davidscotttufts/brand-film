@@ -15,8 +15,13 @@ export const LICENCES = {
   'public-domain': 'no rights reserved',
   cc0: 'Creative Commons Zero',
   'cc-by': 'Creative Commons Attribution: credit required',
-  'cc-by-sa': 'Creative Commons Attribution-ShareAlike: credit required',
+  'cc-by-sa': 'Creative Commons Attribution-ShareAlike: credit required; the film may have to carry the same licence',
+  unsplash: 'the Unsplash Licence (via npm run find): commercial use, credit the photographer',
+  pexels: 'the Pexels Licence (via npm run find): commercial use, credit the creator',
+  pixabay: 'the Pixabay Content Licence (via npm run find): commercial use, credit the creator',
 };
+/** Licences that come from a library, so the clip must say where: its page and its author. */
+export const STOCK = new Set(['cc0', 'cc-by', 'cc-by-sa', 'public-domain', 'unsplash', 'pexels', 'pixabay']);
 
 /** Problems with a clips.json entry, as strings; empty when it may be used. */
 export function clipProblems(c) {
@@ -28,8 +33,12 @@ export function clipProblems(c) {
   if (c.blender && (c.file || c.url)) p.push(`${id}: a blender clip is rendered, so it has no "file" or "url"`);
   const lic = c.blender ? (c.licence ?? 'own') : c.licence;
   if (!lic) p.push(`${id}: no "licence"; one of ${Object.keys(LICENCES).join(', ')} (references/footage.md)`);
+  else if (/(^|-)nc(-|$)|non-?commercial/i.test(lic)) p.push(`${id}: licence "${lic}" is NonCommercial; a brand film is commercial use, so it can't be used`);
+  else if (/(^|-)nd(-|$)|no-?deriv/i.test(lic)) p.push(`${id}: licence "${lic}" is NoDerivatives; cutting, cropping and captioning are changes, so it can't be used`);
   else if (!LICENCES[lic]) p.push(`${id}: licence "${lic}" is not one of ${Object.keys(LICENCES).join(', ')}`);
-  if (/^cc-by/.test(lic ?? '') && !c.credit) p.push(`${id}: ${lic} requires a "credit" (who to attribute)`);
+  if (/^cc-by/.test(lic ?? '') && !c.credit && !c.author) p.push(`${id}: ${lic} requires a "credit" or "author" (who to attribute)`);
+  if (['unsplash', 'pexels', 'pixabay'].includes(lic) && !(c.page && c.author)) p.push(`${id}: a ${lic} clip needs its "page" and "author" (add it with npm run find -- --add)`);
+  if (c.kind && !['image', 'video'].includes(c.kind)) p.push(`${id}: "kind" is image or video`);
   if (c.in != null && c.out != null && !(c.out > c.in)) p.push(`${id}: "out" (${c.out}s) must be after "in" (${c.in}s)`);
   if (c.blender && !(c.frames > 0)) p.push(`${id}: a blender clip needs "frames"`);
   return p;

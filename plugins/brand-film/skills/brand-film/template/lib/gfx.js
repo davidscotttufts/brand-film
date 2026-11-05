@@ -188,6 +188,43 @@
     };
   }
 
-  const GFX = { clamp, ease, easeOut, ramp, win, lerp, counter, typed, caret, clipFrame, barChart, lineChart, lowerThird, titleCard, typing, clip, used };
+  /**
+   * The push-in on a still (a "Ken Burns" move) at film time t: { scale, x, y },
+   * x and y in percent of the picture. Even speed from `at` to `until`; holds
+   * before and after. zoom: [from, to]; pan: [[x0, y0], [x1, y1]].
+   */
+  function stillMove(t, { at, until, zoom = [1.0, 1.12], pan = [[0, 0], [-2, -1]] }) {
+    const k = clamp((t - at) / ((until ?? at + 6) - at));
+    return { scale: lerp(zoom[0], zoom[1], k), x: lerp(pan[0][0], pan[1][0], k), y: lerp(pan[0][1], pan[1][1], k) };
+  }
+
+  /**
+   * A still from npm run clips (a photo from npm run find, the brand's own
+   * picture), filling its box and pushing in slowly between `at` and `until`.
+   * The <img> sits in a box with overflow: hidden; it covers the box. A still
+   * holds best for 3 to 6 seconds with a zoom of 10 to 15 per cent.
+   */
+  function still(img, id, opts = {}) {
+    const m = (root.CLIP_MANIFEST ?? {})[id];
+    if (!m) throw new Error(`clip "${id}" is not in clips/manifest.js: add it to clips.json (npm run find -- --add) and run npm run clips`);
+    used.add(id);
+    img.src = `${m.dir}/00001.${m.ext}`;
+    css(img, { width: '100%', height: '100%', objectFit: 'cover', transformOrigin: opts.origin ?? '50% 50%', willChange: 'transform' });
+    if (img.parentElement) img.parentElement.style.overflow = 'hidden';
+    return (t) => {
+      const { scale, x, y } = stillMove(t, opts);
+      img.style.transform = `scale(${scale.toFixed(4)}) translate(${x.toFixed(3)}%, ${y.toFixed(3)}%)`;
+    };
+  }
+
+  /** The credit lines the film's clips need (clips/manifest.js), joined, in a small label: for the end card. */
+  function credits(el, { separator = ' · ', prefix = '' } = {}) {
+    const lines = root.CLIP_CREDITS ?? [];
+    el.textContent = lines.length ? prefix + lines.join(separator) : '';
+    css(el, { font: '400 var(--video-size-mono-label-min) var(--video-font-label)', lineHeight: '1.5' });
+    return lines;
+  }
+
+  const GFX = { clamp, ease, easeOut, ramp, win, lerp, counter, typed, caret, clipFrame, stillMove, barChart, lineChart, lowerThird, titleCard, typing, clip, still, credits, used };
   root.GFX = GFX;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -72,7 +72,7 @@ test('the publish record carries the description, chapters and footage credits',
     duration: 40,
     credits: [{ id: 'walk', credit: 'NVIDIA press kit', licence: 'press-kit' }, { id: 'me', credit: 'Our team', licence: 'own' }],
   });
-  assert.equal(info.description, 'How one team shipped faster.\n\n0:00 Intro\n0:12 Problem\n0:24 Proof\n\nFootage: NVIDIA press kit (press-kit); Our team');
+  assert.equal(info.description, 'How one team shipped faster.\n\n0:00 Intro\n0:12 Problem\n0:24 Proof\n\nFootage and photos:\nNVIDIA press kit (press-kit)\nOur team');
   assert.deepEqual(info.warnings, []);
 });
 

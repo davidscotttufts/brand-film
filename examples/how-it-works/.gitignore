@@ -21,5 +21,6 @@ sfx/*.wav
 # small; keep large or third-party files out and note where they live.
 clips/
 study/
+find/
 # Many projects ignore lib/ as build output; these are the film's sources.
 !lib/

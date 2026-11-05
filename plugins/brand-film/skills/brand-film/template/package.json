@@ -16,6 +16,7 @@
     "audition": "node narrate.mjs --audition",
     "music": "node music.mjs",
     "sfx": "node sfx.mjs",
+    "find": "node find.mjs",
     "clips": "node clips.mjs",
     "shots": "node shots.mjs",
     "study": "node study.mjs",

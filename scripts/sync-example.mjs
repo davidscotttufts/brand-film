@@ -11,7 +11,7 @@ export const SHARED = ['narrate.mjs', 'render.mjs', 'preview.mjs', 'tokens.mjs',
   'lib/stage.mjs', 'lib/captions.mjs', 'lib/cuts.mjs',
   'lib/gfx.js', 'lib/transcribe.mjs', 'lib/page.mjs', 'lib/publish.mjs', 'status.mjs', 'source.mjs',
   'clips.mjs', 'shots.mjs', 'study.mjs', 'lib/media.mjs', 'lib/color.mjs', 'blender/turntable.py',
-  'lib/recorded.mjs'];
+  'lib/recorded.mjs', 'find.mjs', 'lib/stock.mjs', 'lib/keys.mjs'];
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const TEMPLATE = join(root, 'plugins/brand-film/skills/brand-film/template');
 export const examples = () => readdirSync(join(root, 'examples'), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => join(root, 'examples', d.name));

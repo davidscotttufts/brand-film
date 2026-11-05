@@ -154,7 +154,12 @@ from frame 0, SFX cued on visible changes. Use the graphics kit
 (`lib/gfx.js`: counters, bar and line charts, title cards with specs, lower
 thirds, typing) before drawing a part from scratch. Footage: add it to
 `clips.json` with its licence, `npm run clips`, and show it with `GFX.clip`
-(`references/footage.md`). For other shapes, lay the scene out for each one
+(`references/footage.md`). No footage of the thing? `npm run find -- "<what the shot shows>"`
+searches Wikimedia Commons and Openverse (Creative Commons) and, with a key,
+Unsplash, Pexels and Pixabay, with each licence read from the library; add
+one with `npm run find -- --add <n> --id <name>` and show a picture with
+`GFX.still` (a slow push-in). Credit what needs crediting on the end card
+(`GFX.credits`). For other shapes, lay the scene out for each one
 listed in `ASPECTS` and review each (`npm run sheet -- --aspect 9:16`). Render a contact sheet
 (`npm run sheet`) and stills at the key words; read every frame for overlap,
 clipping, wraps, ghosts and timing; fix; repeat.
@@ -238,7 +243,10 @@ session where this film stands.
   read, no flashing, never autoplay, meaning never carried by colour or sound
   alone.
 - **Footage needs a licence.** Every clip has a source and a licence in
-  media.lock.json; footage you can't license stays out. Never take a
+  media.lock.json; footage you can't license stays out. NonCommercial and
+  NoDerivatives licences never go in a brand film; ShareAlike only with the
+  user's yes. A stock picture with a recognisable person or someone else's
+  logo needs the user's yes too. Never take a
   creator's video from YouTube or social media for B-roll.
 - **The voice is the person's or the narrator's, untouched.** A recorded
   voice is cut, not re-performed: never regenerate a person's words with a
