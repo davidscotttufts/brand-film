@@ -24,6 +24,23 @@ bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/film
 (cd "$tmp/film" && node lint.mjs && node render.mjs)
 check "$tmp/film" fixture 780
 
+# Footage: a synthetic three-shot video, split into shots, made into a clip
+# (refused without a licence), its frames and lock written.
+(cd "$tmp/film" && node -e '
+  const { execFileSync } = require("child_process"); const ff = require("ffmpeg-static");
+  require("fs").mkdirSync("media", { recursive: true });
+  execFileSync(ff, ["-loglevel", "error", "-y", "-f", "lavfi", "-i", "color=c=0x1f6feb:s=640x360:d=2", "-f", "lavfi", "-i", "color=c=0xf6f5f2:s=640x360:d=1.5",
+    "-f", "lavfi", "-i", "color=c=0x101010:s=640x360:d=2.5", "-filter_complex", "[0:v][1:v][2:v]concat=n=3:v=1:a=0[v]", "-map", "[v]", "-c:v", "libx264", "-pix_fmt", "yuv420p", "media/demo.mp4"]);
+  require("fs").writeFileSync("clips.json", JSON.stringify({ clips: [{ id: "demo", file: "media/demo.mp4", in: 0.5, out: 4 }] }));' \
+  && ! node clips.mjs 2>/dev/null \
+  && node -e 'const fs = require("fs"); const c = JSON.parse(fs.readFileSync("clips.json")); c.clips[0].licence = "own"; fs.writeFileSync("clips.json", JSON.stringify(c));' \
+  && node clips.mjs && node shots.mjs media/demo.mp4 && node -e '
+  const fs = require("fs");
+  const s = JSON.parse(fs.readFileSync("media/demo.shots.json", "utf8")); const m = JSON.parse(fs.readFileSync("clips/manifest.json", "utf8")).demo;
+  const lock = JSON.parse(fs.readFileSync("media.lock.json", "utf8")).clips[0];
+  if (s.shotCount !== 3 || Math.abs(m.frames - 105) > 1 || lock.licence !== "own" || !lock.sha256) { console.error(JSON.stringify({ s, m, lock })); process.exit(1); }
+  console.log(`ok footage: ${s.shotCount} shots, clip of ${m.frames} frames, licence ${lock.licence}`);' && rm -rf clips clips.json media media.lock.json)
+
 # The full mix with no account: synthetic takes (the last ending just before
 # the film does) and a score, so the ducking and the spoken-word check run.
 bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/voiced" voiced

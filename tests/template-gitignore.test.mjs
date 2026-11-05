@@ -36,12 +36,13 @@ test('a film folder commits its final audio and its lib/, and ignores what is fr
     'narration/a-open.0123456789ab.alignment.json', 'music/score.0123456789ab.mp3',
     'lib/lexicon.mjs',
     'out/film.mp4', 'preview/t0001.0.jpg', 'sfx/tick.0123456789ab.wav', 'node_modules/x/index.js',
+    'clips/demo.0123456789ab/00001.jpg', 'sfx/door.0123456789ab.mp3', 'media.lock.json', 'house-style.md',
   ]);
   for (const p of ['narration/a-open.0123456789ab.mp3', 'narration/a-open.0123456789ab.verify.json',
-    'narration/a-open.0123456789ab.alignment.json', 'music/score.0123456789ab.mp3', 'lib/lexicon.mjs']) {
+    'narration/a-open.0123456789ab.alignment.json', 'music/score.0123456789ab.mp3', 'lib/lexicon.mjs', 'sfx/door.0123456789ab.mp3', 'media.lock.json', 'house-style.md']) {
     assert.equal(r[p], false, `${p} must be committed`);
   }
-  for (const p of ['out/film.mp4', 'preview/t0001.0.jpg', 'sfx/tick.0123456789ab.wav', 'node_modules/x/index.js']) {
+  for (const p of ['out/film.mp4', 'preview/t0001.0.jpg', 'sfx/tick.0123456789ab.wav', 'node_modules/x/index.js', 'clips/demo.0123456789ab/00001.jpg']) {
     assert.equal(r[p], true, `${p} must be ignored`);
   }
 });

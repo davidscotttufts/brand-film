@@ -116,10 +116,20 @@ if (!P.own) {
   if (untranslated.length) console.warn(`[render] on-screen text not translated into ${P.code}: ${untranslated.join(', ')} (scene.html STRINGS.${P.code})`);
 }
 if (missing.length) console.warn(`[render] fonts not loaded: ${missing.join(', ')} (offline, or a licensed face with no file? the fallback face will render)`);
-const { duration, fps, captions, posterT, sfxCues } = await page.evaluate(() => ({
+const { duration, fps, captions, posterT, sfxCues, usedClips, clipCues } = await page.evaluate(() => ({
   duration: window.DURATION, fps: window.FPS, captions: window.CAPTIONS ?? [], posterT: window.POSTER_T ?? 0,
-  sfxCues: window.SFX ?? [],
+  sfxCues: window.SFX ?? [], usedClips: [...(window.GFX?.used ?? [])], clipCues: window.CLIPS ?? [],
 }));
+
+// Footage (clips.mjs): every clip the scene shows or cues must come from
+// media.lock.json with a licence, or the film doesn't render.
+const clipLock = existsSync(join(here, 'media.lock.json')) ? JSON.parse(readFileSync(join(here, 'media.lock.json'), 'utf8')).clips ?? [] : [];
+const clipManifest = existsSync(join(here, 'clips', 'manifest.json')) ? JSON.parse(readFileSync(join(here, 'clips', 'manifest.json'), 'utf8')) : {};
+for (const id of new Set([...usedClips, ...clipCues.map((c) => c[1])])) {
+  const l = clipLock.find((c) => c.id === id);
+  if (!l || !l.licence || !clipManifest[id]) { console.error(`[render] FAIL clip "${id}" is in the scene but ${!l ? 'not in media.lock.json' : !l.licence ? 'has no licence' : 'not in clips/manifest.json'}: add it to clips.json with its licence and run npm run clips`); process.exit(1); }
+}
+if (usedClips.length) console.log(`[render] footage: ${usedClips.map((id) => `${id} (${clipLock.find((c) => c.id === id).licence})`).join(', ')}`);
 
 
 // Narration (optional): narrate.mjs writes narration/manifest.json. With it,
@@ -155,7 +165,12 @@ const effects = sfxCues.map(([at, id, gain]) => {
   const e = sfxLib[id];
   if (!e) { console.error(`scene cues sound effect "${id}", which is not in sfx/manifest.json. Run: npm run sfx`); process.exit(1); }
   return { at, file: e.file, gain: gain ?? e.gain };
-}).filter((e) => {
+}).concat(clipCues.map(([at, id, gain]) => {
+  // A clip's own sound, cued like an effect: window.CLIPS = [[t, id, gainDb?]].
+  const m = clipManifest[id];
+  if (!m?.audio) { console.error(`scene cues the sound of clip "${id}", which has none: set "audio": true in clips.json and run npm run clips`); process.exit(1); }
+  return { at, file: m.audio, gain: gain ?? m.gainDb };
+})).filter((e) => {
   if (existsSync(join(here, e.file))) return true;
   console.warn(`[render] ${e.file} is missing (run npm run sfx); that effect is skipped`);
   return false;
@@ -269,7 +284,7 @@ console.log(`\n[render] wrote out/${NAME}.mp4${MAIN ? `, out/${vttName(P.code)}`
 // some Linux builds print no frame count for a stream copy at all.
 const probe = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-map', '0:v', '-c', 'copy', '-f', 'framecrc', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 const counted = probe.status === 0 ? (probe.stdout ?? '').split('\n').filter((l) => /^\d/.test(l)).length : NaN;
-const report = { basename: NAME, language: P.code, aspect: ASPECT.name, width: ASPECT.width, height: ASPECT.height, duration, fps, frames: counted, expectedFrames: frames, audio: audioOut[0] !== '-an', voice: lines.length > 0, captions: cues.length, burnedCaptions: BURN };
+const report = { basename: NAME, language: P.code, footage: usedClips, aspect: ASPECT.name, width: ASPECT.width, height: ASPECT.height, duration, fps, frames: counted, expectedFrames: frames, audio: audioOut[0] !== '-an', voice: lines.length > 0, captions: cues.length, burnedCaptions: BURN };
 if (report.audio) {
   const r = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', mp4, '-af', 'ebur128=peak=true', '-f', 'null', '-'], { encoding: 'utf8' });
   const tail = (r.stderr ?? '').split('Summary:').pop();
