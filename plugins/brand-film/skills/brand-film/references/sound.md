@@ -46,11 +46,32 @@ also use a key kept in the login Keychain under the service name
 `elevenlabs-api-key` (`security add-generic-password -a "$USER" -s elevenlabs-api-key -w`).
 Never put the key in chat, a committed file or a URL.
 
+## A recorded voice-over
+
+A person's own voice instead of a narrator: `npm run narrate -- --recorded <file>`
+(footage.md has the whole method). The takes are cut from the recording on
+the waveform, checked against the script like a voiced take, and mixed the
+same way. No characters are spent; the transcript is one speech-to-text call.
+
+## When speech-to-text fails
+
+ElevenLabs speech-to-text is the listening check's first choice. When it
+refuses a file (its size or format, the plan, the network), the check uses
+whisper.cpp if it is installed: `brew install whisper-cpp`, download a model
+(`ggml-base.en.bin` for English, `ggml-small.bin` for other languages) and set
+`WHISPER_MODEL` to it (`WHISPER_CPP` names the binary if it isn't
+`whisper-cli`). `takes.lock.json` records the transcriber of each take. If
+neither works the run stops and lists both errors; don't switch the check off.
+
 ## Effects (sfx.json)
 
 Six synthesized effects, no API: tick (counting, typing), sweep (scene
 change), chime (a result lands), refuse (a flaw, a no), wait (pending), pop
-(one thing appears). Cue them in `window.SFX`. Every cue has something visible
+(one thing appears). Cue them in `window.SFX`. A sound a recipe can't make (a
+door, a crowd, a shutter) can be generated: an effect with `"prompt"` (and
+optionally `"durationSeconds"`, `"promptInfluence"`) is made by ElevenLabs
+sound effects, costs credits, and is cached and committed as `sfx/<id>.<hash>.mp3`
+with its record in `sfx.lock.json`. Say the cost first. Every cue has something visible
 changing at that moment; a burst of ticks at -28 to -32 dB for a count; never an
 effect on the onset of a spoken word you want heard. Effects sit 12 dB or more
 under the voice.
@@ -67,8 +88,15 @@ last seconds.
 
 ## The mix (render.mjs)
 
-- Voice: each take delayed to its `at`, mixed, `loudnorm I=-16:TP=-1.5:LRA=11`
-  on its own bus, forced stereo.
+- Voice: each take delayed to its `at`, mixed, normalized to -16 LUFS with a
+  -1.5 dBTP ceiling on its own bus, forced stereo. In two passes: the voice
+  bus is measured first, then `loudnorm` runs in linear mode with those
+  numbers, one gain for the whole voice. One-pass loudnorm is dynamic: it rides
+  the gain word by word, which flattens a narrator and makes a recorded voice
+  sound compressed. When the peaks wouldn't fit under the ceiling, loudnorm
+  falls back to dynamic; the report says which (`voiceProcessing.loudnorm`)
+  and how much flatter the voice's peaks are in the film than in the takes
+  (`crestLossDb`; over 4 dB is audible: lower the music or effects).
 - Effects: each at its gain and time, mixed, stereo.
 - Music: `levelDb` (about -10 dB; a raw score averages near -18 dB, so -18 was
   inaudible under the voice), 1.5 s fade in, 2.5 s fade out, ducked by

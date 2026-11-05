@@ -48,6 +48,36 @@ almost the brand's. brand-film checks each of those:
   the final mix, and checks that every load-bearing fact still appears in its
   source.
 
+## Short form, footage and a person's own voice
+
+The same film, the same checks, more places to put it:
+
+- **Other shapes.** One scene renders as 16:9, 9:16 and 1:1 (`film.json`
+  `aspects`); the scene lays itself out for each.
+- **Captions in the picture.** Word by word, in the brand's caption colours,
+  for players that play muted (`burnCaptions`).
+- **Cut-downs.** Shorter films from ranges of a finished one, refused when a
+  cut lands inside a word (`cuts`).
+- **The opening, checked.** Lint and `npm run score` flag a late or long hook,
+  machine-written phrasing ("not just X, it's Y"), long caveats and a missing
+  call to action, before any credits are spent.
+- **A graphics kit.** Counters, bar and line charts, title cards with specs,
+  lower thirds, typing: every part a pure function of time, in the brand's tokens.
+- **A web page as the source** (`npm run source -- <url>`), with its media listed.
+- **Footage with a licence.** Clips (a file, a URL, or a Blender render) become
+  frame-exact sequences; every one needs a licence in `media.lock.json`, and
+  the credits go into `publish.json` with titles and chapters.
+- **A person's own voice.** They read the script, retakes and all;
+  `npm run narrate -- --recorded vo.m4a` finds each take, drops the stumbles,
+  shortens the pauses and cuts on the waveform so no word is clipped, then
+  checks each take against the script like a voiced one.
+- **A house style that learns.** Review notes go into `house-style.md`
+  (`npm run lesson`); the next film starts from them, and lint enforces the
+  words the brand never says.
+
+See [`references/short-form.md`](plugins/brand-film/skills/brand-film/references/short-form.md)
+and [`references/footage.md`](plugins/brand-film/skills/brand-film/references/footage.md).
+
 ## Other languages
 
 Each language is one of two modes:
@@ -90,7 +120,9 @@ You also need:
   `npm i -g @elevenlabs/cli && elevenlabs auth login`. Without it you still get a
   silent film with effects and captions.
 - Optional, for reading a brand's decks and PDFs: `pdftotext`, `pdftoppm`
-  (poppler) and `soffice` (LibreOffice).
+  (poppler) and `soffice` (LibreOffice). For footage: `yt-dlp` (downloads by
+  URL) and Blender (3D clips). As a fallback transcriber: whisper.cpp with
+  `WHISPER_MODEL` set.
 
 ## Use
 
@@ -103,14 +135,16 @@ stills, the outline, the voiced takes, and the contact sheet before the long
 render. In the film folder it creates:
 
 ```bash
-npm run doctor      # 1. what's missing: Node, packages, Chrome, ElevenLabs sign-in and credits
+npm run doctor      # 1. what's missing: Node, packages, Chrome, ElevenLabs sign-in and credits, the network
 npm run tokens      # 2. check the brand: contrast, logo and font files, lexicon
-npm run lint        # 3. check the script with no API: windows, sentence length, acronyms, digits
+npm run lint        # 3. check the script with no API: windows, sentence length, acronyms, digits, the opening
+npm run score       #    the script's checklist, out of 10
 npm run narrate     # 4. voice changed takes, listen to each, time the words
 npm run sfx         # 5. synthesize sound effects (ffmpeg, no API)
 npm run music       # 6. compose the optional score
 npm run sheet       # 7. a contact sheet of frames to approve
-npm run render      # 8. render, mix, caption, verify
+npm run render      # 8. render every shape and cut-down, mix, caption, verify, write publish.json
+npm run status      #    where the film stands, for whoever picks it up next
 ```
 
 ## How it works

@@ -16,7 +16,7 @@
     },
     "signature": {
       "openingCard": "Stage (ink) ground, a two-line headline in the headline face at openingLine size, one accent word (accent-on-stage). Complete from frame 0.",
-      "sceneLabel": "Numbered mono label, '01 \u00b7 where we started', in stage-muted with the number in accent-on-stage.",
+      "sceneLabel": "Numbered mono label, '01 · where we started', in stage-muted with the number in accent-on-stage.",
       "sceneTitle": "One line at sceneTitle size; at most one accent word or phrase.",
       "proof": "Pictures first. A command card or screenshot may appear, small, as evidence; anything shown as output is real output.",
       "endCard": "Card (paper) ground: one line at endCardLine size, one sentence, the page URL."
@@ -42,7 +42,8 @@
         "bodyMax": 36,
         "monoLabelMin": 20,
         "monoLabelMax": 26,
-        "readableFloor": 20
+        "readableFloor": 20,
+        "caption": 64
       }
     },
     "story": {
@@ -101,12 +102,26 @@
       "card-faint": "#5e636c",
       "accent": "oklch(60% 0.12 235)",
       "accent-on-stage": "oklch(76% 0.11 235)",
-      "accent-on-card": "oklch(47% 0.13 235)"
+      "accent-on-card": "oklch(47% 0.13 235)",
+      "caption-text": "var(--video-stage-text)",
+      "caption-box": "var(--video-stage)",
+      "caption-highlight": "var(--video-accent-on-stage)"
     },
     "fontFamily": {
       "headline": "\"Space Grotesk\", ui-sans-serif, system-ui, sans-serif",
       "body": "\"Inter\", ui-sans-serif, system-ui, sans-serif",
       "label": "\"JetBrains Mono\", ui-monospace, \"SF Mono\", Menlo, monospace"
+    },
+    "captions": {
+      "$comment": "Burned-in captions (film.json burnCaptions): `mode` word (the spoken word takes caption-highlight) or line; at most `maxWords` on screen; `position` is where the caption's centre sits, as a fraction of the stage height, per aspect tag (default for the rest). Keep it clear of a platform's own buttons: in 9:16 the bottom fifth is covered.",
+      "mode": "word",
+      "maxWords": 5,
+      "position": {
+        "default": 0.92,
+        "9x16": 0.72,
+        "1x1": 0.9,
+        "4x5": 0.88
+      }
     }
   },
   "contrast": [
@@ -137,6 +152,14 @@
     [
       "accent-on-card",
       "card"
+    ],
+    [
+      "caption-text",
+      "caption-box"
+    ],
+    [
+      "caption-highlight",
+      "caption-box"
     ]
   ]
 }

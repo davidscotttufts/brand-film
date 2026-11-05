@@ -12,6 +12,9 @@
   --video-accent: oklch(60% 0.12 235);
   --video-accent-on-stage: oklch(76% 0.11 235);
   --video-accent-on-card: oklch(47% 0.13 235);
+  --video-caption-text: var(--video-stage-text);
+  --video-caption-box: var(--video-stage);
+  --video-caption-highlight: var(--video-accent-on-stage);
   --video-font-headline: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --video-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
   --video-font-label: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -23,6 +26,7 @@
   --video-size-mono-label-min: 20px;
   --video-size-mono-label-max: 26px;
   --video-size-readable-floor: 20px;
+  --video-size-caption: 64px;
   --video-margin: 160px;
   --video-reveal: 0.4s;
 }

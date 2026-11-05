@@ -111,3 +111,48 @@ test('a captions-only language renders its .vtt without Chrome or an account', (
   assert.equal((vtt.match(/-->/g) ?? []).length, 4);
   assert.match(vtt, /Phrase quatre\./);
 });
+
+test('lint fails on a take with no scene, and on a phrase the house style never says', () => {
+  const dir = film({ 'narration.json': (n) => { delete n.takes[1].scene; n.takes[2].text = 'A real game-changer, shipped in 17 weeks.'; delete n.takes[2].anchors; return n; } });
+  run(dir, 'tokens.mjs');
+  assert.equal(run(dir, 'lesson.mjs', 'never', 'game-changer').status, 0);
+  assert.match(readFileSync(join(dir, 'house-style.md'), 'utf8'), /## Never say[\s\S]*- game-changer/);
+  const r = run(dir, 'lint.mjs');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /b-start: no "scene"/);
+  assert.match(r.stderr, /c-result: uses "game-changer"/);
+  assert.match(r.stdout, /game-changer.*reads as machine-written/);
+});
+
+test('lint warns on a late hook; score prints a checklist out of 10', () => {
+  const dir = film({ 'narration.json': (n) => { n.takes[0].at = 2.2; return n; } });
+  run(dir, 'tokens.mjs');
+  assert.match(run(dir, 'lint.mjs').stdout, /a-open: the voice starts at 2.2s/);
+  const r = run(dir, 'score.mjs', '--json');
+  assert.equal(r.status, 0, r.stderr);
+  const s = JSON.parse(r.stdout);
+  assert.equal(s.outOf, 10);
+  assert.equal(s.items.find((i) => i.name === 'hook starts at once').points, 0);
+});
+
+test('status names the next step from the files alone', () => {
+  const dir = film();
+  run(dir, 'tokens.mjs');
+  const r = run(dir, 'status.mjs');
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /done  brand tokens/);
+  assert.match(r.stdout, /TODO  narration +not started/);
+  assert.match(r.stdout, /next: npm run narrate/);
+});
+
+test('source reads a saved page into source.txt and points film.json at it', () => {
+  const dir = film();
+  writeFileSync(join(dir, 'page.html'), '<html><head><title>Launch</title></head><body><p>Shipped in 17 weeks.</p><video src="a.mp4"></video></body></html>');
+  const r = run(dir, 'source.mjs', 'page.html');
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(readFileSync(join(dir, 'source.txt'), 'utf8'), /Title: Launch\n\nShipped in 17 weeks\./);
+  assert.equal(JSON.parse(readFileSync(join(dir, 'film.json'), 'utf8')).source, 'source.txt');
+  const media = JSON.parse(readFileSync(join(dir, 'source.media.json'), 'utf8')).media;
+  assert.equal(media.length, 1);
+  assert.equal(media[0].licence, null);
+});

@@ -33,10 +33,24 @@ function level(pcm, a, b) {
   return 10 * Math.log10(sum / (i1 - i0) || 1e-12);
 }
 
+/** Peak-to-RMS of [a, b) seconds, in dB: how much the sound's peaks stand above its body. */
+function crest(pcm, a, b) {
+  const i0 = Math.max(0, Math.floor(a * RATE)), i1 = Math.min(pcm.length, Math.ceil(b * RATE));
+  if (i1 <= i0) return NaN;
+  let sum = 0, peak = 0;
+  for (let i = i0; i < i1; i++) { const v = pcm[i]; sum += v * v; if (Math.abs(v) > peak) peak = Math.abs(v); }
+  const rms = Math.sqrt(sum / (i1 - i0));
+  return rms > 0 && peak > 0 ? 20 * Math.log10(peak / rms) : NaN;
+}
+
 /**
- * Words the mix lost. `maxDropDb`: how far under the film's median mix gain a
+ * Words the mix lost, and how much it squashed the voice. `maxDropDb`: how far under the film's median mix gain a
  * word may sit before it counts as lost.
- * Returns { words, medianGainDb, lost: [{ take, word, at, gainDb }] }.
+ * crestLossDb: the median drop, word by word, in peak-to-RMS from the take
+ * to the film. A voice the mix leaves alone loses about nothing; one squeezed
+ * by compression or a limiter loses several dB and sounds flat and pumped
+ * (the "weird EQ or compression" a listener hears).
+ * Returns { words, medianGainDb, crestLossDb, lost: [{ take, word, at, gainDb }] }.
  */
 export function checkSpokenWords({ ffmpegPath, mp4, manifest, dir, maxDropDb = 10 }) {
   const mix = decode(ffmpegPath, mp4);
@@ -48,11 +62,13 @@ export function checkSpokenWords({ ffmpegPath, mp4, manifest, dir, maxDropDb = 1
       const inMix = level(mix, w.start, end);
       const inTake = level(src, w.start - take.at, end - take.at);
       if (inTake === -Infinity || inTake < -60) continue; // nothing to compare against
-      measured.push({ take: take.id, word: w.text, at: w.start, gainDb: inMix - inTake });
+      measured.push({ take: take.id, word: w.text, at: w.start, gainDb: inMix - inTake, crestLoss: crest(src, w.start - take.at, end - take.at) - crest(mix, w.start, end) });
     }
   }
   const sorted = measured.map((m) => m.gainDb).sort((a, b) => a - b);
   const medianGainDb = sorted[Math.floor(sorted.length / 2)] ?? 0;
   const lost = measured.filter((m) => m.gainDb < medianGainDb - maxDropDb);
-  return { words: measured.length, medianGainDb, lost };
+  const losses = measured.map((m) => m.crestLoss).filter(Number.isFinite).sort((a, b) => a - b);
+  const crestLossDb = losses[Math.floor(losses.length / 2)] ?? 0;
+  return { words: measured.length, medianGainDb, crestLossDb, lost };
 }

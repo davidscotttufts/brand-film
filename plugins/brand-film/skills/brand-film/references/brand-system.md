@@ -43,7 +43,15 @@ In this order of authority:
    artifact, a codebase's tokens): read its README and tokens and reuse its
    values exactly. A deck system (960×540 slide tokens) is a SOURCE for the
    film system, not the film system itself; convert, don't copy positions.
-5. **The user.** Ask only for what none of the above answers (for example a
+5. **The brand's own videos**, when it has any: `npm run study -- <video>…`
+   measures each one's shape, pacing (shots, median shot, cuts a minute), the
+   colours actually on screen and loudness, with a contact sheet
+   (footage.md). On-screen colours are evidence, not standards: a colour the
+   standards don't name doesn't become a token without the user's say-so.
+   Pacing and shape go into the house style.
+6. **The house style** from the brand's earlier films (`house-style.md`, or a
+   shared one named in `brand.houseStyle`): what reviewers already corrected.
+7. **The user.** Ask only for what none of the above answers (for example a
    licensed font file, or which of two logos is current).
 
 Record every file and URL in `brand.sources`. python-pptx and PIL are often

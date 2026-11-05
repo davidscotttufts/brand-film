@@ -11,12 +11,22 @@
      so a rebrand is a token change. The default identity (default-tokens.json):
      ink stage, two-line opening card, numbered mono scene label, paper end
      card with the page URL. Every fact on screen comes from
-     film.json `source`. -->
+     film.json `source`.
+     Shapes: ASPECTS lists the shapes this scene lays out for. ?aspect=9x16
+     sets <html data-aspect="9x16">; the stage size and every position that
+     changes live in the [data-aspect] rules below and in layout(), so one
+     timeline renders as 16:9, 9:16 and 1:1 (film.json `aspects`). -->
 <link rel="stylesheet" href="brand-tokens.css">
 <style>
   html, body { margin: 0; background: #000; }
   #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--video-stage);
            font-family: var(--video-font-body); color: var(--video-stage-text); }
+  /* Other shapes: a narrower margin, and the tops that move. 9:16 keeps text
+     out of the top 12% and bottom 20%, where a phone's player draws its own UI. */
+  [data-aspect="9x16"] { --video-margin: 72px; }
+  [data-aspect="9x16"] #stage { width: 1080px; height: 1920px; }
+  [data-aspect="1x1"] { --video-margin: 72px; }
+  [data-aspect="1x1"] #stage { width: 1080px; height: 1080px; }
   #stage em { font-style: normal; color: var(--video-accent-on-stage); }
   .abs { position: absolute; }
   .sec { inset: 0; }
@@ -25,6 +35,10 @@
   .label b { color: var(--video-accent-on-stage); font-weight: 500; }
   .title { left: var(--video-margin); top: 150px; font-family: var(--video-font-headline); font-size: var(--video-size-scene-title);
            font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  [data-aspect="9x16"] .label { top: 300px; }
+  [data-aspect="9x16"] .title { top: 350px; right: var(--video-margin); }
+  [data-aspect="1x1"] .label { top: 80px; }
+  [data-aspect="1x1"] .title { top: 124px; right: var(--video-margin); }
   .card { box-sizing: border-box; background: var(--video-card); color: var(--video-card-text); border-radius: 18px; }
   .big { font-family: var(--video-font-headline); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
 
@@ -33,6 +47,11 @@
   #sA img { position: absolute; left: var(--video-margin); top: 110px; width: 120px; }
   #sA .hl { position: absolute; left: var(--video-margin); font-family: var(--video-font-headline); font-size: var(--video-size-opening-line);
             font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  #sA .hl1 { top: 420px; } #sA .hl2 { top: 560px; }
+  [data-aspect="9x16"] #sA img, [data-aspect="9x16"] #sL img { top: 300px; }
+  [data-aspect="9x16"] #sA .hl1 { top: 780px; } [data-aspect="9x16"] #sA .hl2 { top: 920px; }
+  [data-aspect="1x1"] #sA img, [data-aspect="1x1"] #sL img { top: 80px; }
+  [data-aspect="1x1"] #sA .hl1 { top: 400px; } [data-aspect="1x1"] #sA .hl2 { top: 540px; }
 
   /* B: the problem */
   .team { top: 380px; width: 360px; height: 280px; padding: 30px; }
@@ -42,6 +61,8 @@
   /* C: the proof */
   #num { left: var(--video-margin); top: 400px; font-size: 220px; color: var(--video-accent-on-stage); }
   #numK { left: calc(var(--video-margin) + 8px); top: 650px; font-size: var(--video-size-body-max); color: var(--video-stage-muted); }
+  [data-aspect="9x16"] #num { top: 640px; } [data-aspect="9x16"] #numK { top: 890px; }
+  [data-aspect="1x1"] #num { top: 340px; } [data-aspect="1x1"] #numK { top: 590px; }
   .bar { left: var(--video-margin); height: 56px; border-radius: 10px; }
   .barK { left: var(--video-margin); font-family: var(--video-font-label); font-size: var(--video-size-mono-label-min); color: var(--video-stage-muted); }
 
@@ -53,6 +74,8 @@
   #sL .hl em { color: var(--video-accent-on-card); }
   #sL .sub { position: absolute; left: var(--video-margin); top: 590px; font-size: var(--video-size-body-max); color: var(--video-card-muted); }
   #sL .url { position: absolute; left: var(--video-margin); top: 680px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max); color: var(--video-card-muted); }
+  [data-aspect="9x16"] #sL .hl { top: 780px; } [data-aspect="9x16"] #sL .sub { top: 1000px; } [data-aspect="9x16"] #sL .url { top: 1080px; }
+  [data-aspect="1x1"] #sL .hl { top: 330px; } [data-aspect="1x1"] #sL .sub { top: 540px; } [data-aspect="1x1"] #sL .url { top: 620px; }
 </style>
 </head>
 <body>
@@ -70,17 +93,17 @@
     <div class="abs title" data-i18n="c-title" data-fit>Shipped in <em>17 weeks.</em></div>
     <div class="abs big" id="num">0</div>
     <div class="abs" id="numK" data-i18n="c-unit">weeks from idea to production</div>
-    <div class="abs barK" style="top:760px">this project</div>
-    <div class="abs bar" id="barNew" style="top:790px;background:var(--video-accent)"></div>
-    <div class="abs barK" style="top:872px">a typical project</div>
-    <div class="abs bar" id="barOld" style="top:902px;background:var(--video-stage-rule)"></div>
+    <div class="abs barK" id="barNewK">this project</div>
+    <div class="abs bar" id="barNew" style="background:var(--video-accent)"></div>
+    <div class="abs barK" id="barOldK">a typical project</div>
+    <div class="abs bar" id="barOld" style="background:var(--video-stage-rule)"></div>
   </div>
 
   <!-- A: opening card (late in the DOM so it covers the stage until it fades) -->
   <div class="abs" id="sA">
     <img src="assets/logo-on-stage.svg" alt="Logo">
-    <div class="hl" style="top:420px" data-i18n="a-1">One team learned</div>
-    <div class="hl" style="top:560px" data-i18n="a-2">to ship <em>faster.</em></div>
+    <div class="hl hl1" data-i18n="a-1" data-fit>One team learned</div>
+    <div class="hl hl2" data-i18n="a-2" data-fit>to ship <em>faster.</em></div>
   </div>
 
   <!-- L: end card -->
@@ -92,7 +115,16 @@
   </div>
 </div>
 
+<!-- The graphics kit (counters, bar and line charts, title cards with specs,
+     lower thirds, typing, clips): lib/gfx.js, see references/scene-contract.md.
+     A film with clips loads clips/manifest.js (npm run clips) before it. -->
+<script src="lib/gfx.js"></script>
 <script>
+// The shapes this scene lays out for (film.json `aspects` may use any of them).
+const ASPECTS = ['16:9', '9:16', '1:1'];
+const ASPECT = new URLSearchParams(location.search).get('aspect') || '16x9';
+document.documentElement.dataset.aspect = ASPECT;
+
 const DURATION = 26.0;
 const FPS = 30;
 const POSTER_T = 2.0; // the opening card: players and Slides use the first frames as the thumbnail
@@ -149,7 +181,7 @@ for (const el of document.querySelectorAll('[data-i18n]')) {
 // stage's safe area instead of clipping. Only elements marked data-fit shrink,
 // and only when they would overflow.
 function fitText() {
-  const max = 1920 - 2 * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--video-margin') || 160);
+  const max = document.getElementById('stage').clientWidth - 2 * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--video-margin') || 160);
   for (const el of document.querySelectorAll('[data-fit]')) {
     el.style.fontSize = '';
     const display = el.style.display;
@@ -175,9 +207,21 @@ function setO(el, o, dy = 0) {
   el.style.visibility = o > 0.001 ? 'visible' : 'hidden';
 }
 
-// Built once.
-$('teams').innerHTML = TEAMS.map((n, i) =>
-  `<div class="abs card team" id="tm${i}" style="left:${160 + i * 413}px"><h3>${n}</h3>${'<i></i>'.repeat(4)}</div>`).join('');
+// Built once, for the shape: the stage's width and margin decide the layout.
+const STAGE_W = $('stage').clientWidth;
+const MARGIN = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--video-margin')) || 160;
+const BAR_W = STAGE_W - 2 * MARGIN;
+const WIDE = ASPECT === '16x9';
+// Four tiles in a row on a wide stage; two by two on a tall or square one.
+const tile = (i) => WIDE
+  ? { left: MARGIN + i * 413, top: 380, w: 360, h: 280 }
+  : { left: MARGIN + (i % 2) * (BAR_W / 2 + 12), top: (ASPECT === '9x16' ? 620 : 380) + Math.floor(i / 2) * (ASPECT === '9x16' ? 330 : 290), w: BAR_W / 2 - 12, h: ASPECT === '9x16' ? 300 : 260 };
+$('teams').innerHTML = TEAMS.map((n, i) => {
+  const p = tile(i);
+  return `<div class="abs card team" id="tm${i}" style="left:${p.left}px;top:${p.top}px;width:${p.w}px;height:${p.h}px"><h3>${n}</h3>${'<i></i>'.repeat(4)}</div>`;
+}).join('');
+const BARS_TOP = { '16x9': 760, '9x16': 1000, '1x1': 700 }[ASPECT] ?? 760;
+[['barNewK', 0], ['barNew', 30], ['barOldK', 112], ['barOld', 142]].forEach(([id, dy]) => { $(id).style.top = `${BARS_TOP + dy}px`; });
 
 function renderBase(t) {
   // A: the opening card is complete from frame 0 (it is the thumbnail), then fades.
@@ -190,10 +234,10 @@ function renderBase(t) {
   // C: the number counts up as it is said; the bars compare it to the usual.
   setO($('sC'), win(t, 14.2, 14.8, 21.2, 21.8));
   setO($('num'), ramp(t, 16.8, 17.2), 30);
-  $('num').textContent = Math.round(17 * ramp(t, 17.2, 18.6));
+  $('num').textContent = GFX.counter(t, 17.2, 18.6, 17);
   setO($('numK'), ramp(t, 18.6, 19.1), 16);
-  $('barNew').style.width = (1600 * 17 / 52 * ramp(t, 19.0, 19.8)) + 'px';
-  $('barOld').style.width = (1600 * ramp(t, 19.6, 20.6)) + 'px';
+  $('barNew').style.width = (BAR_W * 17 / 52 * ramp(t, 19.0, 19.8)) + 'px';
+  $('barOld').style.width = (BAR_W * ramp(t, 19.6, 20.6)) + 'px';
 
   // L: end card.
   setO($('sL'), ramp(t, 21.8, 22.4));
@@ -220,6 +264,7 @@ window.FPS = FPS;
 window.CAPTIONS = CAPTIONS;
 window.POSTER_T = POSTER_T;
 window.SFX = SFX;
+window.ASPECTS = ASPECTS;
 window.render = render;
 const q = new URLSearchParams(location.search).get('t');
 if (q !== null) render(parseFloat(q));
