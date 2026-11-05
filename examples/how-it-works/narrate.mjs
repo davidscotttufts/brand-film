@@ -42,6 +42,7 @@ import { compileLexicon, lintLexicon } from './lib/lexicon.mjs';
 import { checkTranscript } from './lib/verify.mjs';
 import { account, el, elJson, hasCli } from './lib/elevenlabs.mjs';
 import { filmLanguages, langPaths, rulesFor, translatedTakes } from './lib/lang.mjs';
+import { scoreScript } from './lib/script.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = JSON.parse(readFileSync(join(here, 'narration.json'), 'utf8'));
@@ -64,6 +65,12 @@ if (narrator?.model && narrator?.voiceId) {
 const lexProblems = lintLexicon(tokens.brand?.pronunciations ?? []);
 if (lexProblems.length) { for (const p of lexProblems) console.error(`[lexicon] ${p}`); process.exit(1); }
 const lex = compileLexicon(rulesFor(tokens.brand?.pronunciations ?? [], P.code, baseLang));
+if (P.own && !process.argv.includes('--audition')) {
+  const film = existsSync(join(here, 'film.json')) ? JSON.parse(readFileSync(join(here, 'film.json'), 'utf8')) : {};
+  const sc = scoreScript({ takes: cfg.takes, facts: film.facts ?? [] });
+  const misses = sc.items.filter((i) => i.points < i.max).map((i) => i.name);
+  console.log(`[score] the script scores ${sc.score}/${sc.outOf}${misses.length ? ` (short on: ${misses.join(', ')}; npm run score)` : ''}`);
+}
 
 // A translated voice-over: the base takes' timing with the translation's text,
 // that language's narrator, and its own folder and lock file.

@@ -6,7 +6,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const SHARED = ['narrate.mjs', 'render.mjs', 'preview.mjs', 'tokens.mjs', 'lint.mjs', 'doctor.mjs', 'music.mjs', 'sfx.mjs',
-  'sfx.json', 'default-tokens.json', 'package.json', '.gitignore', 'lib/lexicon.mjs', 'lib/verify.mjs', 'lib/elevenlabs.mjs', 'lib/audiocheck.mjs', 'lib/lang.mjs', 'translate.mjs'];
+  'sfx.json', 'default-tokens.json', 'package.json', '.gitignore', 'lib/lexicon.mjs', 'lib/verify.mjs', 'lib/elevenlabs.mjs', 'lib/audiocheck.mjs', 'lib/lang.mjs', 'translate.mjs',
+  'score.mjs', 'lesson.mjs', 'lib/script.mjs', 'lib/housestyle.mjs'];
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const TEMPLATE = join(root, 'plugins/brand-film/skills/brand-film/template');
 export const examples = () => readdirSync(join(root, 'examples'), { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => join(root, 'examples', d.name));
