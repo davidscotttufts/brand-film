@@ -17,6 +17,8 @@ timing. Open `scene.html?t=42.5` in a browser to scrub; with no `?t` it loops.
 | `window.POSTER_T` | the poster frame (the opening card, ~2 s) |
 | `window.CAPTIONS` | `[[a, b, text]]`, fallback captions for a silent render |
 | `window.SFX` | `[[t, effectId, gainDb?]]`, sound cues in film seconds |
+| `window.ASPECTS` | the shapes the scene lays out for (`['16:9', '9:16']`); see short-form.md |
+| `window.CLIPS` | `[[t, clipId, gainDb?]]`, a clip's own sound, cued like an effect |
 
 ## Building it
 
@@ -52,6 +54,32 @@ timing. Open `scene.html?t=42.5` in a browser to scrub; with no `?t` it loops.
 - Real output only: anything shown as a command result or screenshot is real.
   Placeholder UI (gray bars for code, blank cards) is fine when it reads as an
   illustration.
+
+## The graphics kit (lib/gfx.js)
+
+Load it with `<script src="lib/gfx.js"></script>` (after `clips/manifest.js`
+when the film has footage). Each part builds its DOM once and returns
+`render(t)`; call it from `renderBase(t)`. Copy the times from the voiced words.
+
+| part | what |
+|---|---|
+| `GFX.counter(t, a, b, value, { prefix, suffix, decimals })` | a number counting up as it is said, formatted (`1,204`, `$4.2M`) |
+| `GFX.barChart(el, rows, { at, unit })` | bars that grow in turn, each value counting with its bar; `accent: true` on the one that matters |
+| `GFX.lineChart(el, points, { at, draw })` | a line that draws itself, with its points |
+| `GFX.titleCard(el, { kicker, title, specs }, { at, until })` | credentials and specs (who, what, the number) on a card, rows landing in turn |
+| `GFX.lowerThird(el, { title, sub }, { at, until })` | a name and a role, sliding in on the accent rule |
+| `GFX.typing(el, text, { at, cps })` | a prompt or a command typed, with a caret |
+| `GFX.clip(img, id, { at, rate, loop })` | footage from `npm run clips`, frame-exact (footage.md) |
+
+All of them use only `--video-*` tokens. Prefer them to a new drawing: they
+already follow the motion rules, and a reviewer has seen them work.
+
+## Images and footage
+
+`render.mjs` waits for every image a frame shows to decode before it takes
+the screenshot, so an `<img>` whose `src` changes in `render(t)` (a clip's next
+frame) is always in the frame. Never load anything over the network in a
+scene; copy it into the folder.
 
 ## Inserting scenes later (INSERTS)
 

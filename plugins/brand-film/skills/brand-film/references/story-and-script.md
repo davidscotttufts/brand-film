@@ -3,6 +3,13 @@
 Write the story before any scene. The narration is the spine: scenes are timed
 to the voiced words, never the other way round.
 
+## Start from the house style
+
+Before the outline, read the brand's `house-style.md` (`npm run lesson` prints
+it): what earlier films' reviews taught about wording, pictures and sound.
+Its "Never say" list fails lint. After the review, add what this film taught
+(review-and-delivery.md).
+
 ## Choose the shape
 
 **Explainer (default).** One idea, 45–75 s, five beats:
@@ -74,6 +81,19 @@ but don't name the framework on screen or in narration, and avoid its jargon
   word rather than bending the sentence.
 - A take that overruns its window fails `npm run narrate`. Tighten a word or two,
   or widen the scene. Don't speed up the voice.
+
+## Check it before voicing
+
+`npm run score` adds up a 10-point checklist from the script alone: the voice
+in the first second, a first sentence of 12 words or fewer, the pace (2.0 to
+2.9 words per second of window), sentence length, one idea per take, plain
+words (no "not just X, it's Y", "game-changer", "seamless"…), caveats in one
+clause, a call to action at the end, and facts listed for the source check.
+Report the total with the outline; fix what it misses unless there's a reason
+not to. `npm run lint` warns on the same rules.
+
+Write three title options with the script (film.json `publish.titles`) and,
+for a film over a minute, a `chapter` name on the takes that start a part.
 
 ## Captions
 

@@ -1,5 +1,46 @@
 # Changelog
 
+## 1.3.0
+
+Short form, footage, a person's own voice, and a house style that learns.
+Ideas drawn from a creator's AI short-form editing workflow, rebuilt around
+brand-film's rule that everything is checked.
+
+- **House style per brand.** `house-style.md` (or a shared file named by
+  `brand.houseStyle`) holds Script, Picture and Sound notes and a Never say
+  list; `npm run lesson` adds a dated note; lint fails on a never-say phrase.
+- **Script rules and a score.** Lint fails on a take with no `scene` (every
+  line has a shot) and warns on a late or long hook, machine-written phrasing,
+  a caveat past one clause, more than one idea in a take, and no call to
+  action. `npm run score` is a 10-point checklist; narrate prints it.
+- **Other shapes.** film.json `aspects` renders the scene as 16:9, 9:16, 1:1
+  or 4:5 (`out/<basename>.9x16.mp4`); the template lays out for three.
+- **Burned-in captions** (`burnCaptions`): word by word, written forms
+  restored, brand caption roles checked for contrast.
+- **Cut-downs** (`cuts`): ranges of a finished shape, refused when a cut lands
+  inside a word, verified like the film.
+- **Graphics kit** (`lib/gfx.js`): counters, bar and line charts, title cards
+  with specs, lower thirds, typing, frame-exact clips.
+- **A web page as the source** (`npm run source`), its media listed.
+- **Footage** (`clips.json`, `npm run clips`): files, URLs (fetch or yt-dlp)
+  and Blender renders become frame sequences; every clip needs a licence;
+  `media.lock.json` records source, licence, credit and hash; render refuses
+  unlicensed footage and mixes a clip's sound when cued (`window.CLIPS`).
+- **`npm run shots`** (shot list and contact sheet) and **`npm run study`**
+  (a brand's videos measured: pacing, colours, loudness).
+- **Recorded voice-over** (`npm run narrate -- --recorded <file>`): each take
+  found among retakes, stumbles dropped, pauses shortened, cuts made on the
+  waveform, each take checked against the script.
+- **Transcription fallback** to whisper.cpp; the lock records the transcriber.
+- **Generated sound effects**: an sfx.json entry with a `prompt` is made by
+  ElevenLabs, cached, committed and locked in `sfx.lock.json`.
+- **The voice is normalized in one gain** (two-pass loudnorm, linear mode);
+  the report measures how much the mix flattens it (`voiceProcessing`).
+- **`out/<basename>.publish.json`**: titles, description, chapters (YouTube's
+  rules checked), footage credits and every file; `posters` adds poster choices.
+- **`npm run status`** names the next step; **doctor** checks the network and
+  the optional tools.
+
 ## 1.2.0
 
 - **A film folder now commits its final audio.** The template's `.gitignore`

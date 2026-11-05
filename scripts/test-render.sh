@@ -76,6 +76,21 @@ node "$root/scripts/fake-narration.mjs" "$tmp/voiced" --lang es
 (cd "$tmp/voiced" && node render.mjs --lang es)
 check "$tmp/voiced" voiced.es 780 voiced.es.vtt
 
+# A recorded voice-over: a synthetic read with a false start, a stumble and a
+# long pause, cut into takes with no transcriber or account, then rendered.
+bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/recorded" recorded
+node "$root/scripts/fake-recording.mjs" "$tmp/recorded"
+(cd "$tmp/recorded" && node narrate.mjs --recorded recordings/vo.wav --transcript recordings/vo.words.json && node render.mjs)
+check "$tmp/recorded" recorded 780
+node -e '
+  const fs = require("fs"); const dir = process.argv[1];
+  const r = JSON.parse(fs.readFileSync(dir + "/out/recorded.report.json", "utf8"));
+  const lock = JSON.parse(fs.readFileSync(dir + "/takes.lock.json", "utf8"));
+  const c = lock.takes.find((t) => t.id === "c-result");
+  if (!r.voice || r.spokenWords.lost.length || r.voiceProcessing.loudnorm !== "linear") { console.error(JSON.stringify(r)); process.exit(1); }
+  if (lock.model !== "recorded" || c.recorded.dropped.join() !== "in" || !lock.takes.every((t) => t.verify.pass)) { console.error(JSON.stringify(lock)); process.exit(1); }
+  console.log(`ok recorded voice-over: ${r.spokenWords.checked} words heard; dropped "${c.recorded.dropped}" from c-result`);' "$tmp/recorded"
+
 ex="$root/examples/how-it-works"
 (cd "$ex" && npm install --silent && node tokens.mjs --check && node lint.mjs && node sfx.mjs && node render.mjs)
 check "$ex" how-it-works 1440
