@@ -130,6 +130,10 @@ for (const id of new Set([...usedClips, ...clipCues.map((c) => c[1])])) {
   if (!l || !l.licence || !clipManifest[id]) { console.error(`[render] FAIL clip "${id}" is in the scene but ${!l ? 'not in media.lock.json' : !l.licence ? 'has no licence' : 'not in clips/manifest.json'}: add it to clips.json with its licence and run npm run clips`); process.exit(1); }
 }
 if (usedClips.length) console.log(`[render] footage: ${usedClips.map((id) => `${id} (${clipLock.find((c) => c.id === id).licence})`).join(', ')}`);
+const shareAlike = usedClips.filter((id) => clipLock.find((c) => c.id === id)?.licence === 'cc-by-sa');
+if (shareAlike.length && MAIN) console.warn(`[render] ShareAlike footage (${shareAlike.join(', ')}): the film may have to be shared under CC BY-SA; the user decides (references/footage.md)`);
+const needCredit = usedClips.filter((id) => clipLock.find((c) => c.id === id)?.attribution);
+if (needCredit.length && MAIN) console.log(`[render] credits for ${needCredit.join(', ')} go into publish.json; show them on the end card too (GFX.credits) when the film plays where a description isn't seen`);
 
 
 // Narration (optional): narrate.mjs writes narration/manifest.json. With it,
@@ -327,7 +331,7 @@ if (aspAt === -1) {
 /** out/<basename>.publish.json and .chapters.txt: titles, description, chapters, credits, files. */
 function writePublish() {
   const lockPath = join(here, 'media.lock.json');
-  const credits = existsSync(lockPath) ? (JSON.parse(readFileSync(lockPath, 'utf8')).clips ?? []).map((c) => ({ id: c.id, credit: c.credit ?? null, licence: c.licence, source: c.url ?? c.file ?? c.blender ?? null })) : [];
+  const credits = existsSync(lockPath) ? (JSON.parse(readFileSync(lockPath, 'utf8')).clips ?? []).map((c) => ({ id: c.id, credit: c.credit ?? null, attribution: c.attribution ?? null, licence: c.licence, licenceUrl: c.licenceUrl ?? null, author: c.author ?? null, page: c.page ?? null, source: c.page ?? c.url ?? c.file ?? c.blender ?? null })) : [];
   const exists = (f) => existsSync(join(out, f));
   const films = [film.basename, ...aspects.slice(1).map((a) => `${film.basename}.${aspectOf(a).tag}`), ...(film.cuts ?? []).map((c) => `${film.basename}.${c.id}`)];
   const files = {

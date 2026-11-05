@@ -72,6 +72,69 @@ own pacing, from `npm run study`, overrides this). Brand tokens still frame
 everything: footage sits inside the brand's layout, with its captions and
 title cards.
 
+## Stock and Creative Commons (npm run find)
+
+When the brand has no picture of the thing, find one whose licence a brand
+film can use:
+
+```bash
+npm run find -- "server racks in blue light"              # pictures
+npm run find -- "robot arm welding" --kind video          # footage
+npm run find -- --add 4 --id racks                        # result 4 → clips.json
+npm run find -- --add 2 --id arm --in 1.5 --out 5.5       # a video, trimmed
+npm run clips
+```
+
+| library | key | gives | licence | credit line |
+|---|---|---|---|---|
+| Wikimedia Commons | none | pictures, video | CC0, CC BY, CC BY-SA, public domain, per file | "Title" by Author, CC BY 4.0, via Wikimedia Commons |
+| Openverse | none | pictures (Flickr and others) | the same, per file | "Title" by Author, CC BY 2.0, via Flickr via Openverse |
+| Unsplash | free | pictures | Unsplash Licence | Photo by Author on Unsplash |
+| Pexels | free | pictures, video | Pexels Licence | Photo/Video by Author from Pexels |
+| Pixabay | free | pictures, video | Pixabay Content Licence | Image/Video by Author from Pixabay |
+
+`npm run find -- --keys` says which are ready; `npm run doctor` too. A key goes
+in the environment (`UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`, `PIXABAY_API_KEY`)
+or the macOS Keychain (`security add-generic-password -a "$USER" -s unsplash-access-key -w`),
+never in a file or the chat. Have the user add it (`! security add-generic-password …`).
+
+What the search does for you:
+
+- **The licence is read from the library**, not typed: Commons' file metadata,
+  Openverse's licence field, each stock library's own licence. Results that
+  are NonCommercial or NoDerivatives, or whose licence can't be read, never
+  appear.
+- **Flags** on a result: `share-alike` (CC BY-SA: a film that adapts it may
+  have to carry the same licence, so ask the user before using it in a film
+  the brand keeps under its own terms), `people` (a recognisable person: stock
+  libraries hold no model releases, and a face in a brand film reads as an
+  endorsement; prefer hands, objects and places), `brand` (someone else's logo
+  or product). Flags are word matches on the title and tags, so look at the
+  contact sheet as well (`preview/find-<query>.<kind>.jpg`).
+- **`--add`** writes the clip with its page, author, licence and credit line.
+  `npm run clips` downloads it, reports an Unsplash photo's use to Unsplash
+  (its API terms), and records the credit in `media.lock.json`.
+- **Credits** go into `publish.json`, and `clips/manifest.js` exposes them as
+  `window.CLIP_CREDITS` so the end card can show them: `GFX.credits(el, { prefix: 'Footage: ' })`.
+  Show them on screen whenever the film may play where its description isn't
+  seen (a deck, a page, a feed).
+
+Pictures are stills: one frame, kept large (3840 px on its long side), shown
+with a slow push-in:
+
+```js
+const racks = GFX.still($('racks'), 'racks', { at: 6.0, until: 11.0, zoom: [1.0, 1.12], pan: [[0, 0], [-3, -2]] });
+// <div class="abs" style="…; overflow: hidden"><img id="racks" alt=""></div>
+```
+
+3 to 6 seconds, 10 to 15 per cent of zoom, one direction. A still that holds
+longer needs a second still, not more zoom.
+
+Choosing well: search for what the shot must SHOW, not the topic ("hands
+typing on a laptop at night", not "productivity"). Prefer a picture that
+proves the line over one that decorates it, and the brand's own footage over
+any stock.
+
 ## Shots (npm run shots)
 
 ```bash

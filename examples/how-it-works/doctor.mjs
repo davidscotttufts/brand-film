@@ -12,6 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { account, hasCli } from './lib/elevenlabs.mjs';
+import { KEYS, apiKey } from './lib/keys.mjs';
 
 const require = createRequire(import.meta.url);
 let bad = 0;
@@ -67,6 +68,9 @@ const whisper = process.env.WHISPER_CPP || 'whisper-cli';
 const wOk = has(whisper, ['--help']) && Boolean(process.env.WHISPER_MODEL && existsSync(process.env.WHISPER_MODEL));
 row(wOk ? true : null, 'whisper.cpp', wOk ? process.env.WHISPER_MODEL : 'optional: the fallback transcriber when ElevenLabs speech-to-text fails (brew install whisper-cpp, set WHISPER_MODEL)');
 row(has('yt-dlp') ? true : null, 'yt-dlp', has('yt-dlp') ? '' : 'optional: downloads footage clips.json names by URL (only footage you have the rights to)');
+const keyed = Object.keys(KEYS).filter((p) => apiKey(p));
+row(true, 'stock: wikimedia, openverse', 'Creative Commons pictures (and Commons video), no key');
+row(keyed.length ? true : null, 'stock: unsplash, pexels, pixabay', keyed.length ? `keys for ${keyed.join(', ')}` : 'optional: a free key each widens npm run find (lib/keys.mjs says where)');
 const blender = process.env.BLENDER_PATH || (process.platform === 'darwin' && existsSync('/Applications/Blender.app/Contents/MacOS/Blender') ? '/Applications/Blender.app/Contents/MacOS/Blender' : 'blender');
 row(has(blender) ? true : null, 'blender', has(blender) ? blender : 'optional: renders 3D clips (clips.json "blender"); set BLENDER_PATH if it is not on PATH');
 if (bad) { console.log(`\n${bad} problem(s) to fix before rendering.`); process.exit(1); }
