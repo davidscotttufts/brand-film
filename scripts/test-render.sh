@@ -28,8 +28,22 @@ check "$tmp/film" fixture 780
 # the film does) and a score, so the ducking and the spoken-word check run.
 bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/voiced" voiced
 node "$root/scripts/fake-narration.mjs" "$tmp/voiced"
-(cd "$tmp/voiced" && node render.mjs)
+# …in two shapes, the second with burned-in captions, and a cut-down of it.
+(cd "$tmp/voiced" && node -e '
+  const fs = require("fs"); const f = JSON.parse(fs.readFileSync("film.json", "utf8"));
+  f.aspects = ["16:9", "9:16"]; f.burnCaptions = ["9:16"]; f.cuts = [{ id: "short", aspect: "9:16", ranges: [[0, 5.9], [14.2, 26]] }];
+  fs.writeFileSync("film.json", JSON.stringify(f));' && node render.mjs)
 check "$tmp/voiced" voiced 780
+check "$tmp/voiced" voiced.9x16 780 voiced.en.vtt
+node -e '
+  const fs = require("fs");
+  const v = JSON.parse(fs.readFileSync(process.argv[1] + "/voiced.9x16.report.json", "utf8"));
+  if (v.width !== 1080 || v.height !== 1920 || !v.burnedCaptions || v.spokenWords.lost.length) { console.error(JSON.stringify(v)); process.exit(1); }
+  const c = JSON.parse(fs.readFileSync(process.argv[1] + "/voiced.short.report.json", "utf8"));
+  if (c.frames !== c.expectedFrames || c.spokenWords.lost.length) { console.error(JSON.stringify(c)); process.exit(1); }
+  console.log(`ok 9:16 with burned-in captions; cut-down ${c.frames} frames`);' "$tmp/voiced/out"
+test -s "$tmp/voiced/out/voiced.short.mp4" && test -s "$tmp/voiced/out/voiced.short.en.vtt"
+
 node -e '
   const r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
   if (!r.voice || !r.spokenWords || r.spokenWords.lost.length) { console.error("spoken-word check did not pass:", JSON.stringify(r.spokenWords)); process.exit(1); }

@@ -43,6 +43,7 @@ import { checkTranscript } from './lib/verify.mjs';
 import { account, el, elJson, hasCli } from './lib/elevenlabs.mjs';
 import { filmLanguages, langPaths, rulesFor, translatedTakes } from './lib/lang.mjs';
 import { scoreScript } from './lib/script.mjs';
+import { transcribe as hear } from './lib/transcribe.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cfg = JSON.parse(readFileSync(join(here, 'narration.json'), 'utf8'));
@@ -145,9 +146,13 @@ function forcedWords(mp3, text) {
   return (r.words ?? []).filter((w) => w.text.trim()).map((w) => ({ text: w.text.trim(), start: w.start, end: w.end }));
 }
 
+// ElevenLabs speech-to-text, or whisper.cpp when ElevenLabs refuses the file
+// (lib/transcribe.mjs); the result records which one heard the take.
+let ffmpegForStt = null;
+try { ffmpegForStt = (await import('ffmpeg-static')).default; } catch { /* only the fallback needs it */ }
 function transcribe(mp3) {
-  const r = elJson(['speech-to-text', 'convert', '--model-id', verifyCfg.model, '--file', mp3, '--tag-audio-events', 'false', '--language-code', iso]);
-  return r.text ?? '';
+  const r = hear(mp3, { model: verifyCfg.model, lang: iso, ffmpegPath: ffmpegForStt });
+  return { text: r.text, transcriber: r.transcriber };
 }
 
 // Audition: the same line in several voices, to choose the narrator by ear.
@@ -224,8 +229,8 @@ for (const p of plan) {
     }
     if (!verifyCfg.enabled) break;
     if (!result) {
-      const transcript = transcribe(p.mp3);
-      result = { ...checkTranscript({ transcript, spoken: p.spoken, written: p.written, terms: p.terms, maxWer: verifyCfg.maxWer, lang: iso }), transcript, attempt };
+      const { text: transcript, transcriber } = transcribe(p.mp3);
+      result = { ...checkTranscript({ transcript, spoken: p.spoken, written: p.written, terms: p.terms, maxWer: verifyCfg.maxWer, lang: iso }), transcript, transcriber, attempt };
       writeFileSync(p.check, JSON.stringify(result, null, 2) + '\n');
     }
     if (result.pass) break;
@@ -267,7 +272,7 @@ for (const p of plan) {
   lock.takes.push({
     id: take.id, key: p.key, written: p.written, spoken: p.spoken,
     terms: p.terms.map((t) => t.written), duration: +duration.toFixed(3),
-    verify: verifyCfg.enabled && result ? { wer: result.wer, missingTerms: result.missingTerms, pass: result.pass, transcript: result.transcript, attempts: result.attempt } : null,
+    verify: verifyCfg.enabled && result ? { wer: result.wer, missingTerms: result.missingTerms, pass: result.pass, transcript: result.transcript, transcriber: result.transcriber ?? 'elevenlabs', attempts: result.attempt } : null,
     generatedAt: fresh || !prev ? new Date().toISOString() : prev.generatedAt,
     plan: fresh || !prev ? acct?.tier ?? null : prev.plan,
   });

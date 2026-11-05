@@ -70,8 +70,20 @@ const lum = (rgb) => rgb.reduce((s, x, i) => s + x * [0.2126, 0.7152, 0.0722][i]
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 
 const floor = v.accessibility?.minTextContrast ?? 4.5;
+// A role may name another: "caption-box": "var(--video-stage)".
+const resolveRole = (name, seen = new Set()) => {
+  const val = v.color[name] ?? '';
+  const ref = /^var\(--video-([\w-]+)\)$/.exec(val.trim());
+  if (!ref || seen.has(name)) return val;
+  seen.add(name);
+  return resolveRole(ref[1], seen);
+};
+// The burned-in captions are checked even when a brand lists its own pairs.
+for (const pair of [['caption-text', 'caption-box'], ['caption-highlight', 'caption-box']]) {
+  if (v.color[pair[0]] && v.color[pair[1]] && !(cfg.contrast ?? []).some(([a, b]) => a === pair[0] && b === pair[1])) cfg.contrast = [...(cfg.contrast ?? []), pair];
+}
 for (const [fg, bg] of cfg.contrast ?? []) {
-  const a = linear(v.color[fg] ?? ''), b = linear(v.color[bg] ?? '');
+  const a = linear(resolveRole(fg)), b = linear(resolveRole(bg));
   if (!a || !b) { fail(`contrast ${fg} on ${bg}: unknown colour or format (use #hex, rgb() or oklch())`); continue; }
   const r = ratio(a, b);
   if (r < 3) fail(`${fg} on ${bg} is ${r.toFixed(2)}:1, under 3:1 even for large text`);
