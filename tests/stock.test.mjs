@@ -68,6 +68,16 @@ test('Unsplash: the photo, its photographer with referral links, and the downloa
   assert.equal(attribution(p), 'Photo by Ada Example on Unsplash');
 });
 
+test('Unsplash: flags come from what the picture shows, not the photographer\'s description', () => {
+  const base = { urls: { raw: 'r', small: 's' }, links: { html: 'h' }, user: { name: 'A' } };
+  const [fabric, team] = PROVIDERS.unsplash.parse({ results: [
+    { ...base, id: '1', alt_description: 'Close-up of blue woven fabric texture', description: 'Lines coming towards a person.' },
+    { ...base, id: '2', alt_description: 'server room', tags: [{ title: 'people' }] },
+  ] });
+  assert.deepEqual(fabric.flags, []);
+  assert.deepEqual(team.flags, ['people']);
+});
+
 test('Pexels: photos, and videos with the largest mp4 up to 4K', () => {
   const [ph] = PROVIDERS.pexels.parse({ photos: [{ id: 1, width: 4000, height: 3000, url: 'https://www.pexels.com/photo/racks-1/', photographer: 'Bo', photographer_url: 'https://www.pexels.com/@bo', alt: 'Racks', src: { original: 'https://images.pexels.com/1.jpeg', medium: 'm' } }] }, 'image');
   assert.equal(attribution(ph), 'Photo by Bo from Pexels');
