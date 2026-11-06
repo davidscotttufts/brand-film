@@ -64,6 +64,13 @@ The same film, the same checks, more places to put it:
 - **A graphics kit.** Counters, bar and line charts, title cards with specs,
   lower thirds, typing: every part a pure function of time, in the brand's tokens.
 - **A web page as the source** (`npm run source -- <url>`), with its media listed.
+- **Stock and Creative Commons, licence read from the source.**
+  `npm run find -- "server racks"` searches Wikimedia Commons and Openverse
+  (no key) and Unsplash, Pexels and Pixabay (a free key each); NonCommercial
+  and NoDerivatives results never appear; ShareAlike, people and logos are
+  flagged; `--add` puts a result in clips.json with its credit line. Pictures
+  get a slow push-in (`GFX.still`); credits go on the end card and into
+  `publish.json`.
 - **Footage with a licence.** Clips (a file, a URL, or a Blender render) become
   frame-exact sequences; every one needs a licence in `media.lock.json`, and
   the credits go into `publish.json` with titles and chapters.

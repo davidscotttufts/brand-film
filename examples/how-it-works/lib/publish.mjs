@@ -33,11 +33,11 @@ export const chaptersText = (list) => list.map((c) => `${c.time} ${c.title}`).jo
 export function publishInfo({ film, takes, duration, credits = [], files = {} }) {
   const p = film.publish ?? {};
   const { chapters: ch, warnings } = chapters(takes, duration);
-  const creditLines = credits.filter((c) => c.credit).map((c) => `${c.credit}${c.licence && !/^own$/i.test(c.licence) ? ` (${c.licence})` : ''}`);
+  const creditLines = credits.map((c) => c.attribution ?? (c.credit ? `${c.credit}${c.licence && !/^own$/i.test(c.licence) ? ` (${c.licence})` : ''}` : null)).filter(Boolean);
   const description = [
     p.description || (takes[0]?.text ?? ''),
     ch.length ? `\n${chaptersText(ch)}` : '',
-    creditLines.length ? `\nFootage: ${creditLines.join('; ')}` : '',
+    creditLines.length ? `\nFootage and photos:\n${creditLines.join('\n')}` : '',
   ].filter(Boolean).join('\n').trim();
   if (!p.titles?.length) warnings.push('film.json publish.titles is empty; write three title options with the script');
   return {
