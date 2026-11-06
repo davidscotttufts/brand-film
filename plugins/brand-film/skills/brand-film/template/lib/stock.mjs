@@ -123,8 +123,10 @@ export const PROVIDERS = {
         author: r.user?.name ?? 'Unknown', authorUrl: r.user?.links?.html ? `${r.user.links.html}?${utm}` : null,
         page: `${r.links?.html}?${utm}`, file: `${r.urls?.raw}${r.urls?.raw?.includes('?') ? '&' : '?'}w=3840&fm=jpg&q=85`, thumb: r.urls?.small,
         width: r.width, height: r.height, duration: null, licence: 'unsplash', licenceName: 'Unsplash Licence', licenceUrl: 'https://unsplash.com/license',
+        // Flags read the alt text and tags (what the picture shows), not the
+        // photographer's description ("lines coming towards a person").
         // Unsplash's API terms: call this when the photo is used (clips.mjs does, once).
-        track: r.links?.download_location ?? null, via: 'Unsplash', tags: [r.description, ...(r.tags ?? []).map((t) => t.title)].filter(Boolean).join(' '),
+        track: r.links?.download_location ?? null, via: 'Unsplash', tags: (r.tags ?? []).map((t) => t.title).join(' '),
       }));
     },
   },
