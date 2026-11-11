@@ -33,7 +33,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install Chromium
-        run: npx -y playwright@1.64.1 install --with-deps chromium
+      # The runner's Google Chrome, as on a Mac. A pinned `playwright install`
+      # broke when the template's floating playwright-core moved past it and
+      # looked for a browser build that wasn't there.
+      - name: Use the runner's Google Chrome
+        run: |
+          echo "CHROME_PATH=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          google-chrome --version
       - name: Render the template and the example, silent, and check the reports
         run: npm run test:render
