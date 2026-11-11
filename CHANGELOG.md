@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.4.0
+
+- **`npm run find`**: stock pictures and footage from Wikimedia Commons and
+  Openverse (Creative Commons and public domain, no key) and Unsplash, Pexels
+  and Pixabay (a free key each, from the environment or the macOS Keychain).
+  Each result's licence is read from the library; NonCommercial,
+  NoDerivatives and unreadable licences are dropped; ShareAlike, people and
+  logos are flagged; a contact sheet shows the results. `--add` writes the
+  clip with its page, author, licence and credit line.
+- **Stills** as clips: one large frame, shown with a slow push-in (`GFX.still`).
+- **Credit lines** in each library's own form (TASL for Creative Commons,
+  "Photo by … on Unsplash", …) in `media.lock.json`, `publish.json` and
+  `window.CLIP_CREDITS` for the end card (`GFX.credits`).
+- Unsplash photos are reported to Unsplash when downloaded, as its API terms
+  require. Render warns about ShareAlike footage; clips refuses NonCommercial
+  and NoDerivatives licences by name. Doctor shows which libraries have keys.
+
 ## 1.3.0
 
 Short form, footage, a person's own voice, and a house style that learns.

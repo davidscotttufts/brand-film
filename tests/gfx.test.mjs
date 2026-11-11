@@ -31,3 +31,11 @@ test('a clip holds its first frame, plays, then holds its last (or loops)', () =
   assert.equal(G.clipFrame(5.5, 2, 90, 30, { loop: true }), 15);
   assert.equal(G.clipFrame(3, 2, 90, 30, { rate: 0.5 }), 15);
 });
+
+test('a still pushes in at an even speed and holds before and after', () => {
+  const o = { at: 2, until: 6, zoom: [1, 1.2], pan: [[0, 0], [-4, 2]] };
+  assert.deepEqual({ ...G.stillMove(0, o) }, { scale: 1, x: 0, y: 0 });
+  const mid = G.stillMove(4, o);
+  assert.ok(Math.abs(mid.scale - 1.1) < 1e-9 && Math.abs(mid.x + 2) < 1e-9 && Math.abs(mid.y - 1) < 1e-9, JSON.stringify(mid));
+  assert.deepEqual({ ...G.stillMove(9, o) }, { scale: 1.2, x: -4, y: 2 });
+});

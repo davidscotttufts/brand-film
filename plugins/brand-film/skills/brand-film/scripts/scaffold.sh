@@ -21,7 +21,12 @@ node -e '
   const fs = require("fs"), p = process.argv[1] + "/film.json";
   const f = JSON.parse(fs.readFileSync(p, "utf8")); f.basename = process.argv[2];
   fs.writeFileSync(p, JSON.stringify(f, null, 2) + "\n");' "$target" "$base"
-(cd "$target" && npm install --silent && node tokens.mjs && node sfx.mjs)
+if ! (cd "$target" && npm install --silent); then
+  echo "scaffold: npm install failed in $target. Run it there without --silent to see why;" >&2
+  echo "  ffmpeg-static downloads ffmpeg from GitHub at install, so a 5xx from GitHub is usually temporary: try again." >&2
+  exit 1
+fi
+(cd "$target" && node tokens.mjs && node sfx.mjs)
 echo
 echo "scaffolded $target (outputs: out/$base.*)"
 echo "next: build the brand (references/brand-system.md), write narration.json, then npm run narrate"
