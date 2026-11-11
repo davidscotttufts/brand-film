@@ -1,0 +1,11 @@
+name: debug-cut
+on: pull_request
+jobs:
+  cut:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm i --no-save ffmpeg-static@^5.2.0 && mkdir -p /tmp/c && node scripts/debug-cut.mjs /tmp/c
