@@ -229,7 +229,7 @@ if (lines.length || effects.length || music) {
     // voice first and padding only the ducking key's branch lost the last ~3 s
     // of the last take: loudnorm's look-ahead never flushed into the mix. The
     // spoken-word check after the render fails the film if that ever recurs.
-    graph.push(`${lines.map((_, i) => `[a${i}]`).join('')}amix=inputs=${lines.length}:normalize=0:dropout_transition=0,${voiceNorm.filter},aformat=channel_layouts=stereo,apad,atrim=0:${duration},asplit=2[voice][vsc]`);
+    graph.push(`${lines.map((_, i) => `[a${i}]`).join('')}amix=inputs=${lines.length}:normalize=0:dropout_transition=0,${voiceNorm.filter},aformat=channel_layouts=stereo,apad,atrim=0:${duration}${music ? ',asplit=2[voice][vsc]' : '[voice]'}`);
     buses.push('[voice]');
   }
   if (effects.length) {
@@ -246,9 +246,10 @@ if (lines.length || effects.length || music) {
       graph.push(`[mraw]anull[music]`);
     }
     buses.push('[music]');
-  } else if (lines.length) {
-    graph.push(`[vsc]anullsink`);
   }
+  // The voice is split for the ducking key only when there is music to duck:
+  // an unused branch into anullsink trips an assertion in ffmpeg 7
+  // ("best_input >= 0") and the render writes no file.
   graph.push(`${buses.join('')}amix=inputs=${buses.length}:normalize=0:dropout_transition=0,alimiter=limit=0.84:level=0,apad,atrim=0:${duration}[aout]`);
   audioOut = ['-filter_complex', graph.join(';'), '-map', '0:v', '-map', '[aout]',
     '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2', '-t', String(duration)];
