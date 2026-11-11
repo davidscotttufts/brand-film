@@ -353,7 +353,7 @@ function renderCut(cut) {
   if (fatal.length) process.exit(1);
   const name = `${film.basename}.${cut.id}`;
   const dest = join(out, `${name}.mp4`);
-  const r = spawnSync(ffmpegPath, cutArgs(src, dest, plan.ranges, { audio: report.audio }), { stdio: ['ignore', 'inherit', 'inherit'] });
+  const r = spawnSync(ffmpegPath, cutArgs(src, dest, plan.ranges, { audio: report.audio, fps }), { stdio: ['ignore', 'inherit', 'inherit'] });
   if (r.status !== 0) { console.error(`[cut ${cut.id}] ffmpeg failed`); process.exit(1); }
   writeFileSync(join(out, `${name}.${P.code}.vtt`), vttText(cutCues(cues, plan.ranges)));
   const p = spawnSync(ffmpegPath, ['-hide_banner', '-nostats', '-i', dest, '-map', '0:v', '-c', 'copy', '-f', 'framecrc', '-'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });

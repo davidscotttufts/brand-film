@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { burnCues, captionWords, narrationCues } from '../plugins/brand-film/skills/brand-film/template/lib/captions.mjs';
-import { cutCues, cutManifest, planCut, toCut } from '../plugins/brand-film/skills/brand-film/template/lib/cuts.mjs';
+import { cutArgs, cutCues, cutManifest, planCut, toCut } from '../plugins/brand-film/skills/brand-film/template/lib/cuts.mjs';
 import { aspectOf } from '../plugins/brand-film/skills/brand-film/template/lib/stage.mjs';
 
 const w = (text, start) => ({ text, start, end: start + 0.3 });
@@ -74,4 +74,11 @@ test('the publish record carries the description, chapters and footage credits',
   });
   assert.equal(info.description, 'How one team shipped faster.\n\n0:00 Intro\n0:12 Problem\n0:24 Proof\n\nFootage: NVIDIA press kit (press-kit); Our team');
   assert.deepEqual(info.warnings, []);
+});
+
+test('a cut-down is encoded at the film\'s frame rate (ffmpeg 7 would fall back to 25)', () => {
+  const a = cutArgs('in.mp4', 'out.mp4', [[0, 5.9], [14.2, 26]], { fps: 30 });
+  assert.equal(a[a.indexOf('-r') + 1], '30');
+  const b = cutArgs('in.mp4', 'out.mp4', [[0, 2]], { fps: 24, audio: false });
+  assert.equal(b[b.indexOf('-r') + 1], '24');
 });

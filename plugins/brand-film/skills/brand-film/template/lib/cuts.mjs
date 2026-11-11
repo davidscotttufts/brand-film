@@ -76,7 +76,7 @@ export function cutManifest(manifest, ranges) {
 }
 
 /** ffmpeg arguments that cut `src` to the ranges into `dest`, re-encoded with the film's settings. */
-export function cutArgs(src, dest, ranges, { audio = true } = {}) {
+export function cutArgs(src, dest, ranges, { audio = true, fps = 30 } = {}) {
   const g = [];
   ranges.forEach(([a, b], i) => {
     g.push(`[0:v]trim=start=${a}:end=${b},setpts=PTS-STARTPTS[v${i}]`);
@@ -87,5 +87,8 @@ export function cutArgs(src, dest, ranges, { audio = true } = {}) {
   });
   g.push(`${ranges.map((_, i) => `[v${i}]${audio ? `[a${i}]` : ''}`).join('')}concat=n=${ranges.length}:v=1:a=${audio ? 1 : 0}${audio ? '[v][a]' : '[v]'}`);
   return ['-y', '-loglevel', 'error', '-i', src, '-filter_complex', g.join(';'), '-map', '[v]', ...(audio ? ['-map', '[a]', '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-ac', '2'] : []),
+    // The film's rate, said outright: ffmpeg 7 gives a concat output no rate and
+    // encodes it at 25 fps, dropping a frame in six.
+    '-r', String(fps),
     '-c:v', 'libx264', '-preset', 'slow', '-tune', 'animation', '-crf', '24', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', dest];
 }
