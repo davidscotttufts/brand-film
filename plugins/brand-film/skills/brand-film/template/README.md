@@ -15,7 +15,14 @@ by frame and the bundled ffmpeg encodes it. Scaffolded by the
 | `lint.mjs` | checks the narration with no API: windows, sentence length, acronyms, digits |
 | `music.json`, `music.mjs` | the optional score (ElevenLabs music, instrumental); `music.lock.json` records how it was made |
 | `sfx.json`, `sfx.mjs` | six effects synthesized with ffmpeg into `sfx/` |
-| `film.json` | the scene file, the output name, the source text and the facts it must match |
+| `film.json` | the scene file, the output name, the source text and the facts it must match, the shapes (`aspects`), burned-in captions, cut-downs, poster choices and the publish text |
+| `house-style.md` | what earlier films taught: script, picture and sound notes, and words never to say (`npm run lesson` adds one; lint enforces "Never say") |
+| `score.mjs`, `lesson.mjs`, `status.mjs` | the script's checklist score; add a house-style note; where the film stands and the next command |
+| `source.mjs` | a web page as the source: `source.txt`, its media list, and `source.lock.json` |
+| `clips.json`, `clips.mjs` | footage with its licence, as frame sequences in `clips/`; `media.lock.json` records each clip's source and licence |
+| `shots.mjs`, `study.mjs` | a video's shots and contact sheet; a brand's existing videos measured |
+| `blender/turntable.py` | a 3D clip in the brand's accent (Blender) |
+| `lib/gfx.js` | the graphics kit the scene uses: counters, charts, title cards, lower thirds, typing, clips |
 | `render.mjs` | writes `out/<basename>.mp4`, the poster, `.en.vtt` captions and a `.report.json`, and verifies the file |
 | `preview.mjs` | single frames (`npm run preview -- 12.5 60`) or a contact sheet (`npm run sheet`) |
 | `doctor.mjs` | checks Node, the packages, Chrome and the ElevenLabs sign-in |
@@ -23,13 +30,19 @@ by frame and the bundled ffmpeg encodes it. Scaffolded by the
 ```bash
 npm install
 npm run doctor             # what's missing, if anything
+npm run status             # where the film stands, and the next command
 npm run tokens             # check the brand, write brand-tokens.css
+npm run source -- <url>    # a web page as the source (optional)
 npm run lint               # check the narration (no API)
+npm run score              # the script's checklist, out of 10
+npm run clips              # footage, if clips.json lists any
 npm run narrate            # voices only changed takes, and listens to each
+                           #   (or: npm run narrate -- --recorded vo.m4a, a person's own read)
 npm run music              # only recomposes when music.json changes
 npm run sfx
 npm run sheet              # review frames before the long render
-npm run render
+npm run render             # every shape in film.json aspects, its cut-downs, out/<basename>.publish.json
+npm run lesson -- sound "Music 2 dB lower"   # after review: what the next film should know
 ```
 
 The audio is generated, not committed. `takes.lock.json` and

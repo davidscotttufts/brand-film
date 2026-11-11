@@ -16,5 +16,10 @@ auditions/
 brand-tokens.resolved.json
 .env
 sfx/*.wav
+# Footage frames, rebuilt by npm run clips from clips.json and media.lock.json.
+# media/ (the footage itself) is yours to decide: commit what you own and is
+# small; keep large or third-party files out and note where they live.
+clips/
+study/
 # Many projects ignore lib/ as build output; these are the film's sources.
 !lib/

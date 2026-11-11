@@ -41,6 +41,18 @@ Users review a film in bursts: "there are more changes, don't re-render yet".
 - A background render's progress looks frozen through a pipe; check
   `pgrep -fl "render.mjs|ffmpeg"` rather than waiting on output.
 
+- Other shapes and cut-downs each have their own report: check each one's
+  frames, and pull frames from each finished file. A cut-down's report lists
+  its ranges and the spoken words it kept.
+
+## Keep what the review taught
+
+A note about the brand rather than this film goes into the house style before
+you finish: `npm run lesson -- script "…"`, `picture`, `sound`, or `never`
+(a word lint then refuses). Read the list back to the user. The house style
+lives with the film, or, through `brand.houseStyle`, in one file every film of
+the brand shares. A later session starts with `npm run status`.
+
 ## Delivery
 
 Outputs in `out/`: `<basename>.mp4` (H.264, 30 fps, +faststart), the poster jpg
@@ -76,6 +88,12 @@ poster jpg; play on click.
 kind="captions" srclang="en" src=….en.vtt default>`; never autoplay. When the
 host caches assets as immutable, bump a `?v=` on all three URLs after every
 re-render.
+
+**A channel (YouTube, LinkedIn, social)**: the shapes and cut-downs from
+`out/`, the captions burned in where the shape needs it and the `.vtt` for
+players that take one, and `out/<basename>.publish.json`: the titles, the
+description (with chapters and footage credits), the tags, the poster
+choices. Uploading is the user's step.
 
 Write a short README in the film folder (what each file does, how to re-voice
 and re-render, the mix, where the facts come from) so the next change doesn't

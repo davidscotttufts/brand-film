@@ -1,10 +1,23 @@
 {
   "name": "brand-film",
-  "version": "1.2.0",
-  "description": "Make a narrated, on-brand explainer film (MP4, poster, captions) from a deck, a document or a story: HTML scenes rendered frame by frame, ElevenLabs narration checked by speech-to-text, synthesized sound effects and an optional score.",
-  "author": { "name": "David Tufts", "url": "https://github.com/davidscotttufts" },
+  "version": "1.3.0",
+  "description": "Make a narrated, on-brand explainer film (MP4, poster, captions) from a deck, a document, a web page or a story: HTML scenes rendered frame by frame, ElevenLabs narration or a person's recorded voice checked by speech-to-text, licensed footage, synthesized or generated sound effects and an optional score; as 16:9, 9:16 and 1:1 with burned-in captions and cut-downs.",
+  "author": {
+    "name": "David Tufts",
+    "url": "https://github.com/davidscotttufts"
+  },
   "homepage": "https://davidscotttufts.github.io/brand-film/",
   "repository": "https://github.com/davidscotttufts/brand-film",
   "license": "MIT",
-  "keywords": ["video", "film", "elevenlabs", "narration", "brand", "explainer", "captions"]
+  "keywords": [
+    "video",
+    "film",
+    "elevenlabs",
+    "narration",
+    "brand",
+    "explainer",
+    "captions",
+    "shorts",
+    "footage"
+  ]
 }

@@ -51,3 +51,23 @@ test('digits for spoken numbers are not errors', () => {
   const r = checkTranscript({ transcript: 'Shipped in 17 weeks.', spoken: 'Shipped in seventeen weeks.' });
   assert.equal(r.pass, true);
 });
+
+import { parseWhisperJson, transcribe } from '../plugins/brand-film/skills/brand-film/template/lib/transcribe.mjs';
+
+test('a transcriber that fails hands the file to the next, and the result names who heard it', () => {
+  const failing = { name: 'elevenlabs', available: () => true, run: () => { throw new Error('file too large'); } };
+  const absent = { name: 'nothing', available: () => false, run: () => ({}) };
+  const local = { name: 'whisper.cpp', available: () => true, run: () => ({ text: 'hello', words: [] }) };
+  const r = transcribe('x.mp3', {}, [failing, absent, local]);
+  assert.equal(r.transcriber, 'whisper.cpp');
+  assert.deepEqual(r.errors, ['elevenlabs: file too large', 'nothing: not available']);
+  assert.throws(() => transcribe('x.mp3', {}, [failing, absent]), /elevenlabs: file too large[\s\S]*nothing: not available/);
+});
+
+test('whisper.cpp word segments become timed words', () => {
+  const r = parseWhisperJson({ transcription: [
+    { offsets: { from: 0, to: 320 }, text: ' Look' }, { offsets: { from: 320, to: 500 }, text: '' },
+    { offsets: { from: 500, to: 900 }, text: ' at' }, { offsets: { from: 900, to: 1000 }, text: '[BLANK_AUDIO]' },
+  ] });
+  assert.deepEqual(r, { text: 'Look at', words: [{ text: 'Look', start: 0, end: 0.32 }, { text: 'at', start: 0.5, end: 0.9 }] });
+});
