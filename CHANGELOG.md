@@ -17,6 +17,18 @@
   require. Render warns about ShareAlike footage; clips refuses NonCommercial
   and NoDerivatives licences by name. Doctor shows which libraries have keys.
 
+Fixed, found with ffmpeg 7 (ffmpeg-static on Linux):
+
+- A cut-down is encoded at the film's frame rate; ffmpeg 7 encoded it at
+  25 fps and dropped a frame in six.
+- A film with a voice and no music renders: the ducking key went to
+  `anullsink`, which crashes ffmpeg 7 ("best_input >= 0").
+- Chrome is found where it is installed on Linux and Windows as well as macOS
+  (`CHROME_PATH` still wins), so a render no longer depends on Playwright's own
+  browser build matching the playwright-core npm installed. Doctor uses the
+  same lookup. The render test prints the ffmpeg, playwright-core and Chrome
+  versions it ran with.
+
 ## 1.3.0
 
 Short form, footage, a person's own voice, and a house style that learns.

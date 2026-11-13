@@ -6,6 +6,8 @@
 // another shape lists it in window.ASPECTS (e.g. ['16:9', '9:16', '1:1']) and
 // reads ?aspect=9x16 to set its own stage size and layout; the renderer
 // refuses an aspect the scene does not list rather than squashing it.
+import { existsSync } from 'node:fs';
+
 export const ASPECTS = {
   '16:9': { width: 1920, height: 1080 },
   '9:16': { width: 1080, height: 1920 },
@@ -20,8 +22,17 @@ export function aspectOf(name = '16:9') {
   return { name, tag: name.replace(':', 'x'), ...a };
 }
 
-export const chromePath = () => process.env.CHROME_PATH
-  || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : undefined);
+// The installed Google Chrome (or Chromium) wherever it usually lives, so a
+// render doesn't depend on Playwright's own browser build matching the
+// playwright-core npm happened to install. CHROME_PATH wins; undefined means
+// Playwright's Chromium (npx playwright install chromium).
+export const CHROME_CANDIDATES = {
+  darwin: ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Chromium.app/Contents/MacOS/Chromium'],
+  linux: ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/snap/bin/chromium'],
+  win32: ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'],
+};
+export const chromePath = ({ env = process.env, platform = process.platform, exists = existsSync } = {}) =>
+  env.CHROME_PATH || (CHROME_CANDIDATES[platform] ?? []).find((p) => exists(p));
 
 /**
  * Open the scene. Returns { browser, page, aspect, shot(t, opts) }.
