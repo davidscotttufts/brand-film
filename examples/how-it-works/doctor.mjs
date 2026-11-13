@@ -13,6 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { account, hasCli } from './lib/elevenlabs.mjs';
 import { KEYS, apiKey } from './lib/keys.mjs';
+import { chromePath } from './lib/stage.mjs';
 
 const require = createRequire(import.meta.url);
 let bad = 0;
@@ -27,10 +28,9 @@ try { pw = require.resolve('playwright-core'); } catch { /* not installed */ }
 row(Boolean(ff && existsSync(ff)), 'ffmpeg-static', ff ? '' : 'run npm install');
 row(Boolean(pw), 'playwright-core', pw ? '' : 'run npm install');
 
-const chrome = process.env.CHROME_PATH
-  || (process.platform === 'darwin' ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' : null);
+const chrome = chromePath();
 if (chrome) row(existsSync(chrome), 'chrome', existsSync(chrome) ? chrome : `${chrome} not found; set CHROME_PATH`);
-else row(null, 'chrome', 'CHROME_PATH unset; Playwright\'s own Chromium is used (npx playwright install chromium)');
+else row(null, 'chrome', 'no Chrome or Chromium found and CHROME_PATH unset; Playwright\'s own Chromium is used (npx playwright install chromium)');
 
 if (!hasCli()) {
   row(null, 'elevenlabs CLI', 'not installed: npm i -g @elevenlabs/cli (needed for narration and music; a silent render works without it)');

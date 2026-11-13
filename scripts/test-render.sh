@@ -21,6 +21,15 @@ check() { # <film dir> <output name> <expected frames> [captions file, default <
 }
 
 bash "$root/plugins/brand-film/skills/brand-film/scripts/scaffold.sh" "$tmp/film" fixture
+# Which tools this run used: a version gap between CI and a laptop (ffmpeg 7 on
+# Linux, 6 on a Mac) is the first thing to rule out when only one fails.
+(cd "$tmp/film" && node --input-type=module -e '
+  import ff from "ffmpeg-static"; import { execFileSync } from "node:child_process"; import { createRequire } from "node:module";
+  import { chromePath } from "./lib/stage.mjs";
+  const pw = createRequire(import.meta.url)("playwright-core/package.json").version;
+  const first = (f, a) => { try { return execFileSync(f, a, { encoding: "utf8" }).split("\n")[0]; } catch { return "?"; } };
+  const c = chromePath();
+  console.log(`tools: ${first(ff, ["-version"])} | playwright-core ${pw} | ${c ? first(c, ["--version"]) : "Playwright Chromium"}`);')
 (cd "$tmp/film" && node lint.mjs && node render.mjs)
 check "$tmp/film" fixture 780
 
