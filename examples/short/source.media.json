@@ -1,0 +1,18 @@
+{
+  "$comment": "Pictures and videos on the source page. None is used until clips.json names it with a licence (references/footage.md).",
+  "page": "https://davidscotttufts.github.io/brand-film/",
+  "media": [
+    {
+      "kind": "image",
+      "url": "https://davidscotttufts.github.io/brand-film/how-it-works-poster.jpg",
+      "alt": "og:image",
+      "licence": null
+    },
+    {
+      "kind": "video",
+      "url": "https://davidscotttufts.github.io/brand-film/how-it-works.mp4",
+      "alt": "",
+      "licence": null
+    }
+  ]
+}

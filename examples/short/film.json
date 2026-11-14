@@ -1,0 +1,35 @@
+{
+  "$comment": "Which scene this folder renders and what it writes. `basename` names the outputs: out/<basename>.mp4, out/<basename>-poster.jpg, out/<basename>.en.vtt. `source` is the document every on-screen fact comes from (a deck, a page, a report); `facts` are strings that must appear in BOTH that source's text and the scene, checked by `npm run render` so a film never shows a number its source no longer says. Leave `facts` empty to skip the check. `aspects`: the shapes to render, the film's own first (\"16:9\", \"9:16\", \"1:1\", \"4:5\"); each other shape writes out/<basename>.<9x16>.mp4 from the same scene, which must list it in window.ASPECTS. `burnCaptions`: the shapes whose film has its captions drawn into the picture (social players), or true for all. `cuts`: shorter films from ranges of a finished shape, e.g. {\"id\": \"short\", \"aspect\": \"9:16\", \"ranges\": [[0, 5.9], [14.2, 26]]}, cut between words. `posters`: other moments (seconds) to write as poster choices. `publish`: what the channel needs, written with the script: {\"titles\": [three options], \"description\": \"…\", \"tags\": []}; npm run render adds chapters (a take's `chapter`), footage credits and the files, in out/<basename>.publish.json.",
+  "scene": "scene.html",
+  "basename": "short",
+  "source": "source.txt",
+  "facts": [
+    "Brand films",
+    "made in code",
+    "MIT"
+  ],
+  "aspects": [
+    "9:16"
+  ],
+  "burnCaptions": [
+    "9:16"
+  ],
+  "cuts": [],
+  "posters": [],
+  "publish": {
+    "titles": [
+      "A brand film, made in code",
+      "This short was rendered from one HTML file",
+      "Every word in this video was checked by ear"
+    ],
+    "description": "A 30-second short about brand-film, made with brand-film: one HTML scene rendered frame by frame in headless Chrome, an ElevenLabs voice heard back by speech-to-text, captions burned in for a muted feed. Free and open source (MIT): https://github.com/davidscotttufts/brand-film",
+    "tags": [
+      "claude code",
+      "motion design",
+      "brand video",
+      "elevenlabs",
+      "ffmpeg"
+    ]
+  },
+  "sourceUrl": "https://davidscotttufts.github.io/brand-film/"
+}
