@@ -1,0 +1,387 @@
+{
+  "language": "en",
+  "model": "eleven_v4",
+  "voice": {
+    "id": "G17SuINrv2H9FC6nvetn",
+    "name": "Christopher - Smooth, calm and very English"
+  },
+  "captionReplace": {
+    "brand film": "brand-film",
+    "Eleven Labs": "ElevenLabs",
+    "eff eff em peg": "ffmpeg",
+    "H T M L": "HTML",
+    "Git Hub": "GitHub"
+  },
+  "takes": [
+    {
+      "id": "a-open",
+      "at": 0.4,
+      "until": 5,
+      "speak": "brand film turns a story into a narrated film, in code.",
+      "file": "narration/a-open.da0ac56defb8.mp3",
+      "duration": 4.4,
+      "words": [
+        {
+          "text": "brand",
+          "start": 0.4,
+          "end": 0.8
+        },
+        {
+          "text": "film",
+          "start": 0.88,
+          "end": 1.2
+        },
+        {
+          "text": "turns",
+          "start": 1.28,
+          "end": 1.573
+        },
+        {
+          "text": "a",
+          "start": 1.627,
+          "end": 1.68
+        },
+        {
+          "text": "story",
+          "start": 1.92,
+          "end": 2.16
+        },
+        {
+          "text": "into",
+          "start": 2.24,
+          "end": 2.4
+        },
+        {
+          "text": "a",
+          "start": 2.48,
+          "end": 2.52
+        },
+        {
+          "text": "narrated",
+          "start": 2.56,
+          "end": 3.12
+        },
+        {
+          "text": "film,",
+          "start": 3.2,
+          "end": 3.84
+        },
+        {
+          "text": "in",
+          "start": 3.92,
+          "end": 4.08
+        },
+        {
+          "text": "code.",
+          "start": 4.16,
+          "end": 4.8
+        }
+      ]
+    },
+    {
+      "id": "b-scene",
+      "at": 5.4,
+      "until": 11,
+      "speak": "What you see is one H T M L scene, drawn frame by frame in headless Chrome.",
+      "file": "narration/b-scene.6c1c122e1550.mp3",
+      "duration": 5.44,
+      "words": [
+        {
+          "text": "What",
+          "start": 5.4,
+          "end": 5.56
+        },
+        {
+          "text": "you",
+          "start": 5.64,
+          "end": 5.72
+        },
+        {
+          "text": "see",
+          "start": 5.88,
+          "end": 6.12
+        },
+        {
+          "text": "is",
+          "start": 6.2,
+          "end": 6.44
+        },
+        {
+          "text": "one",
+          "start": 6.52,
+          "end": 6.76
+        },
+        {
+          "text": "H",
+          "start": 6.84,
+          "end": 7.08
+        },
+        {
+          "text": "T",
+          "start": 7.12,
+          "end": 7.16
+        },
+        {
+          "text": "M",
+          "start": 7.24,
+          "end": 7.32
+        },
+        {
+          "text": "L",
+          "start": 7.4,
+          "end": 7.56
+        },
+        {
+          "text": "scene,",
+          "start": 7.64,
+          "end": 8.2
+        },
+        {
+          "text": "drawn",
+          "start": 8.28,
+          "end": 8.6
+        },
+        {
+          "text": "frame",
+          "start": 8.72,
+          "end": 8.84
+        },
+        {
+          "text": "by",
+          "start": 8.92,
+          "end": 9.08
+        },
+        {
+          "text": "frame",
+          "start": 9.16,
+          "end": 9.48
+        },
+        {
+          "text": "in",
+          "start": 9.56,
+          "end": 9.64
+        },
+        {
+          "text": "headless",
+          "start": 9.72,
+          "end": 10.12
+        },
+        {
+          "text": "Chrome.",
+          "start": 10.2,
+          "end": 10.84
+        }
+      ]
+    },
+    {
+      "id": "c-voice",
+      "at": 11.7,
+      "until": 17.6,
+      "speak": "Eleven Labs voices every line, then listens back to check each name.",
+      "file": "narration/c-voice.1c29f8222f40.mp3",
+      "duration": 4.64,
+      "words": [
+        {
+          "text": "Eleven",
+          "start": 11.7,
+          "end": 12.1
+        },
+        {
+          "text": "Labs",
+          "start": 12.14,
+          "end": 12.42
+        },
+        {
+          "text": "voices",
+          "start": 12.5,
+          "end": 12.98
+        },
+        {
+          "text": "every",
+          "start": 13.14,
+          "end": 13.3
+        },
+        {
+          "text": "line,",
+          "start": 13.38,
+          "end": 14.02
+        },
+        {
+          "text": "then",
+          "start": 14.1,
+          "end": 14.26
+        },
+        {
+          "text": "listens",
+          "start": 14.34,
+          "end": 14.66
+        },
+        {
+          "text": "back",
+          "start": 14.82,
+          "end": 14.98
+        },
+        {
+          "text": "to",
+          "start": 15.06,
+          "end": 15.14
+        },
+        {
+          "text": "check",
+          "start": 15.26,
+          "end": 15.38
+        },
+        {
+          "text": "each",
+          "start": 15.46,
+          "end": 15.7
+        },
+        {
+          "text": "name.",
+          "start": 15.78,
+          "end": 16.34
+        }
+      ]
+    },
+    {
+      "id": "d-shapes",
+      "at": 18.3,
+      "until": 23.8,
+      "speak": "The same scene renders wide, tall or square, with captions burned in.",
+      "file": "narration/d-shapes.cd4fe7a524f9.mp3",
+      "duration": 4.96,
+      "words": [
+        {
+          "text": "The",
+          "start": 18.3,
+          "end": 18.46
+        },
+        {
+          "text": "same",
+          "start": 18.62,
+          "end": 18.78
+        },
+        {
+          "text": "scene",
+          "start": 18.86,
+          "end": 19.18
+        },
+        {
+          "text": "renders",
+          "start": 19.38,
+          "end": 19.58
+        },
+        {
+          "text": "wide,",
+          "start": 19.66,
+          "end": 20.22
+        },
+        {
+          "text": "tall",
+          "start": 20.26,
+          "end": 20.62
+        },
+        {
+          "text": "or",
+          "start": 20.7,
+          "end": 20.78
+        },
+        {
+          "text": "square,",
+          "start": 20.86,
+          "end": 21.66
+        },
+        {
+          "text": "with",
+          "start": 21.74,
+          "end": 21.82
+        },
+        {
+          "text": "captions",
+          "start": 21.98,
+          "end": 22.3
+        },
+        {
+          "text": "burned",
+          "start": 22.46,
+          "end": 22.7
+        },
+        {
+          "text": "in.",
+          "start": 22.78,
+          "end": 23.26
+        }
+      ]
+    },
+    {
+      "id": "l-end",
+      "at": 24.5,
+      "until": 29.3,
+      "speak": "It is free and open source. Find brand film on Git Hub.",
+      "file": "narration/l-end.83ee314b0005.mp3",
+      "duration": 4.4,
+      "words": [
+        {
+          "text": "It",
+          "start": 24.5,
+          "end": 24.66
+        },
+        {
+          "text": "is",
+          "start": 24.74,
+          "end": 24.82
+        },
+        {
+          "text": "free",
+          "start": 24.9,
+          "end": 25.22
+        },
+        {
+          "text": "and",
+          "start": 25.3,
+          "end": 25.46
+        },
+        {
+          "text": "open",
+          "start": 25.54,
+          "end": 25.78
+        },
+        {
+          "text": "source.",
+          "start": 25.86,
+          "end": 26.74
+        },
+        {
+          "text": "Find",
+          "start": 26.9,
+          "end": 27.06
+        },
+        {
+          "text": "brand",
+          "start": 27.14,
+          "end": 27.46
+        },
+        {
+          "text": "film",
+          "start": 27.54,
+          "end": 27.86
+        },
+        {
+          "text": "on",
+          "start": 27.94,
+          "end": 28.1
+        },
+        {
+          "text": "Git",
+          "start": 28.18,
+          "end": 28.34
+        },
+        {
+          "text": "Hub.",
+          "start": 28.42,
+          "end": 28.9
+        }
+      ]
+    }
+  ]
+}

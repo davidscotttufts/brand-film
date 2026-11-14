@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>brand-film short</title>
+<!-- A 9:16 short about brand-film, made with brand-film. Every frame is a pure
+     function of time (window.render(t)); cue times come from the voiced words in
+     narration/manifest.json. Only var(--video-*) tokens, never a hex.
+     Layout: 1080x1920. Scene text stays below 12% from the top and above
+     1260px; the burned-in captions sit at 72% (video.captions.position) and a
+     phone's player draws its own UI in the bottom 20%. -->
+<link rel="stylesheet" href="brand-tokens.css">
+<style>
+  html, body { margin: 0; background: #000; }
+  :root { --video-margin: 72px; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--video-stage);
+           font-family: var(--video-font-body); color: var(--video-stage-text); }
+  #stage em { font-style: normal; color: var(--video-accent-on-stage); }
+  .abs { position: absolute; }
+  .sec { inset: 0; }
+  .label { left: var(--video-margin); top: 290px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max);
+           letter-spacing: 0.04em; color: var(--video-stage-muted); display: flex; gap: 18px; }
+  .label b { color: var(--video-accent-on-stage); font-weight: 500; }
+  .title { left: var(--video-margin); right: var(--video-margin); top: 340px; font-family: var(--video-font-headline);
+           font-size: var(--video-size-scene-title); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .card { box-sizing: border-box; background: var(--video-card); color: var(--video-card-text); border-radius: 18px; }
+  .mono { font-family: var(--video-font-label); }
+
+  /* A: opening card */
+  #sA { inset: 0; background: var(--video-stage); }
+  #sA img { position: absolute; left: var(--video-margin); top: 300px; width: 120px; }
+  #sA .hl { position: absolute; left: var(--video-margin); font-family: var(--video-font-headline); font-size: var(--video-size-opening-line);
+            font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  #sA .hl1 { top: 700px; } #sA .hl2 { top: 840px; }
+
+  /* B: the scene, frame by frame */
+  #code { left: var(--video-margin); right: var(--video-margin); top: 560px; height: 330px; padding: 40px 44px;
+          font-size: 34px; line-height: 1.55; white-space: pre; }
+  #code .k { color: var(--video-accent-on-card); }
+  #code .c { color: var(--video-card-muted); }
+  #frameK { left: var(--video-margin); top: 960px; font-size: var(--video-size-mono-label-max); color: var(--video-stage-muted); }
+  #frame { left: var(--video-margin); top: 1000px; font-family: var(--video-font-headline); font-weight: 700; font-size: 180px;
+           line-height: 1; letter-spacing: -0.02em; color: var(--video-accent-on-stage); font-variant-numeric: tabular-nums; }
+
+  /* C: heard as written */
+  #wave { left: var(--video-margin); right: var(--video-margin); top: 560px; height: 200px; }
+  #wave i { position: absolute; bottom: 0; width: 14px; border-radius: 7px; background: var(--video-accent-on-stage); }
+  .name { left: var(--video-margin); right: var(--video-margin); height: 104px; padding: 0 36px; display: flex; align-items: center;
+          justify-content: space-between; font-size: 44px; font-weight: 600; }
+  .name .ok { font-family: var(--video-font-label); font-size: 30px; font-weight: 500; color: var(--video-accent-on-card); }
+
+  /* D: one frame, three shapes */
+  #shape { box-sizing: border-box; border: 6px solid var(--video-accent-on-stage); border-radius: 22px; }
+  #shapeK { font-family: var(--video-font-label); font-size: 44px; color: var(--video-stage-text); text-align: center; }
+
+  /* L: end card, on paper */
+  #sL { inset: 0; background: var(--video-card); color: var(--video-card-text); }
+  #sL img { position: absolute; left: var(--video-margin); top: 300px; width: 120px; }
+  #sL .hl { position: absolute; left: var(--video-margin); font-family: var(--video-font-headline);
+            font-size: 140px; font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+  #sL .hl em { color: var(--video-accent-on-card); }
+  #lH1 { top: 600px; } #lH2 { top: 750px; } #lH3 { top: 900px; }
+  #lSub { position: absolute; left: var(--video-margin); top: 1090px; font-size: var(--video-size-body-max); color: var(--video-card-muted); }
+  #lUrl { position: absolute; left: var(--video-margin); top: 1160px; font-family: var(--video-font-label); font-size: var(--video-size-mono-label-max); color: var(--video-card-muted); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- B: one HTML scene, frame by frame -->
+  <div class="abs sec" id="sB">
+    <div class="abs label"><b>01</b><span>· the picture</span></div>
+    <div class="abs title">One HTML scene, <em>every frame.</em></div>
+    <div class="abs card mono" id="code"></div>
+    <div class="abs mono" id="frameK">frame on screen</div>
+    <div class="abs" id="frame">0</div>
+  </div>
+
+  <!-- C: every line heard back -->
+  <div class="abs sec" id="sC">
+    <div class="abs label"><b>02</b><span>· the voice</span></div>
+    <div class="abs title">Heard <em>as written.</em></div>
+    <div class="abs" id="wave"></div>
+    <div id="names"></div>
+  </div>
+
+  <!-- D: wide, tall, square -->
+  <div class="abs sec" id="sD">
+    <div class="abs label"><b>03</b><span>· the shapes</span></div>
+    <div class="abs title">Wide, tall, <em>square.</em></div>
+    <div class="abs" id="shape"></div>
+    <div class="abs" id="shapeK">16:9</div>
+  </div>
+
+  <!-- A: opening card (late in the DOM so it covers the stage until it fades) -->
+  <div class="abs" id="sA">
+    <img src="assets/logo-on-stage.svg" alt="brand-film">
+    <div class="hl hl1">Brand films,</div>
+    <div class="hl hl2"><em>made in code.</em></div>
+  </div>
+
+  <!-- L: end card -->
+  <div class="abs" id="sL">
+    <img src="assets/logo-on-card.svg" alt="brand-film">
+    <div class="hl" id="lH1">Find</div>
+    <div class="hl" id="lH2"><em>brand-film</em></div>
+    <div class="hl" id="lH3">on GitHub.</div>
+    <div id="lSub">Free and open source, MIT licence.</div>
+    <div id="lUrl">github.com/davidscotttufts/brand-film</div>
+  </div>
+</div>
+
+<script src="lib/gfx.js"></script>
+<script>
+const ASPECTS = ['9:16'];
+document.documentElement.dataset.aspect = '9x16';
+
+const DURATION = 30.0;
+const FPS = 30;
+const POSTER_T = 2.0;
+
+// On-screen captions, used only when the film renders without narration.
+const CAPTIONS = [
+  [0.4, 4.8, 'brand-film turns a story into a narrated film, in code.'],
+  [5.4, 10.8, 'What you see is one HTML scene, drawn frame by frame in headless Chrome.'],
+  [11.7, 17.4, 'ElevenLabs voices every line, then listens back to check each name.'],
+  [18.3, 23.6, 'The same scene renders wide, tall or square, with captions burned in.'],
+  [24.5, 28.9, 'It is free and open source. Find brand-film on GitHub.'],
+];
+
+// Cue times (film seconds), from the voiced words in narration/manifest.json.
+const CUE = {
+  aOut: 5.0,                     // opening card fades
+  bIn: 5.0, code: 6.5, frame: 8.7, bOut: 11.2,
+  cIn: 11.2, wave: 11.8, checks: [15.2, 15.6, 16.0], cOut: 17.9,
+  dIn: 17.9, wide: 19.6, tall: 20.2, square: 20.9, dOut: 24.1,
+  lIn: 24.1,
+};
+
+const SFX = [
+  [0.3, 'sweep'], [1.0, 'chime', -22],
+  [CUE.bIn, 'sweep'], [CUE.code, 'pop'], ...Array.from({ length: 10 }, (_, i) => [CUE.code + 0.2 + i * 0.11, 'tick', -32]), [CUE.frame, 'pop'],
+  [CUE.cIn, 'sweep'], ...CUE.checks.map((t) => [t, 'chime', -24]),
+  [CUE.dIn, 'sweep'], [CUE.wide, 'pop'], [CUE.tall, 'pop'], [CUE.square, 'pop'],
+  [CUE.lIn, 'sweep'], [CUE.lIn + 0.5, 'chime', -20],
+].sort((a, b) => a[0] - b[0]);
+
+const $ = (id) => document.getElementById(id);
+const { clamp, ease, ramp, win, lerp } = GFX;
+function setO(el, o, dy = 0) {
+  el.style.opacity = o.toFixed(3);
+  el.style.transform = dy ? `translateY(${(dy * (1 - o)).toFixed(1)}px)` : '';
+  el.style.visibility = o > 0.001 ? 'visible' : 'hidden';
+}
+
+// B: the code card types itself.
+const CODE = [
+  ['k', 'window.render'], ['', ' = (t) => {\n'],
+  ['', '  draw(t);  '], ['c', '// one frame\n'],
+  ['', '};\n'],
+  ['c', '// Chrome, 30 times a second'],
+];
+const CODE_LEN = CODE.reduce((s, [, x]) => s + x.length, 0);
+function codeAt(n) {
+  let out = '', left = n;
+  for (const [k, x] of CODE) {
+    if (left <= 0) break;
+    const part = x.slice(0, left).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    out += k ? `<span class="${k}">${part}</span>` : part;
+    left -= x.length;
+  }
+  return out;
+}
+
+// C: a waveform (deterministic: a sum of sines of the bar and the time) and three names.
+const BARS = 36;
+const WAVE_W = 1080 - 2 * 72;
+$('wave').innerHTML = Array.from({ length: BARS }, (_, i) => `<i style="left:${(i * WAVE_W / BARS).toFixed(1)}px"></i>`).join('');
+const NAMES = ['brand-film', 'ElevenLabs', 'GitHub'];
+$('names').innerHTML = NAMES.map((n, i) => `<div class="abs card name" id="nm${i}" style="top:${820 + i * 128}px"><span>${n}</span><span class="ok" id="ok${i}">heard ✓</span></div>`).join('');
+
+// D: one frame that changes shape. Sizes fit the area between the title and the captions.
+const SHAPES = [['16:9', 860, 484], ['9:16', 360, 640], ['1:1', 560, 560]];
+const SHAPE_CY = 880;
+
+function render(t) {
+  // A: complete from frame 0 (the thumbnail), then fades.
+  setO($('sA'), 1 - ramp(t, CUE.aOut - 0.4, CUE.aOut + 0.3));
+
+  // B
+  setO($('sB'), win(t, CUE.bIn, CUE.bIn + 0.5, CUE.bOut - 0.4, CUE.bOut));
+  setO($('code'), ramp(t, CUE.code - 0.3, CUE.code + 0.2), 30);
+  $('code').innerHTML = codeAt(Math.round(CODE_LEN * clamp((t - CUE.code) / 1.6)));
+  setO($('frameK'), ramp(t, CUE.frame - 0.3, CUE.frame + 0.2), 16);
+  setO($('frame'), ramp(t, CUE.frame - 0.3, CUE.frame + 0.2), 30);
+  $('frame').textContent = String(Math.round(t * FPS)).padStart(3, '0');
+
+  // C
+  setO($('sC'), win(t, CUE.cIn, CUE.cIn + 0.5, CUE.cOut - 0.4, CUE.cOut));
+  const live = ramp(t, CUE.wave, CUE.wave + 0.6) * (1 - 0.7 * ramp(t, CUE.checks[2] + 0.4, CUE.checks[2] + 1.0));
+  [...$('wave').children].forEach((b, i) => {
+    const h = 0.25 + 0.75 * Math.abs(Math.sin(i * 0.9 + t * 7.1) * Math.sin(i * 0.37 + t * 3.3));
+    b.style.height = `${(12 + 188 * h * live).toFixed(1)}px`;
+  });
+  NAMES.forEach((_, i) => {
+    setO($('nm' + i), ramp(t, CUE.wave + 0.4 + i * 0.25, CUE.wave + 0.9 + i * 0.25), 30);
+    setO($('ok' + i), ramp(t, CUE.checks[i], CUE.checks[i] + 0.3));
+  });
+
+  // D: the frame grows in on "wide", then turns tall, then square.
+  setO($('sD'), win(t, CUE.dIn, CUE.dIn + 0.5, CUE.dOut - 0.4, CUE.dOut));
+  const k1 = ramp(t, CUE.tall - 0.15, CUE.tall + 0.35), k2 = ramp(t, CUE.square - 0.15, CUE.square + 0.35);
+  const w = lerp(lerp(SHAPES[0][1], SHAPES[1][1], k1), SHAPES[2][1], k2);
+  const h = lerp(lerp(SHAPES[0][2], SHAPES[1][2], k1), SHAPES[2][2], k2);
+  const grow = ramp(t, CUE.wide - 0.3, CUE.wide + 0.2);
+  Object.assign($('shape').style, { left: `${(540 - w / 2).toFixed(1)}px`, top: `${(SHAPE_CY - h / 2).toFixed(1)}px`, width: `${w.toFixed(1)}px`, height: `${h.toFixed(1)}px` });
+  setO($('shape'), grow);
+  $('shapeK').textContent = k2 > 0.5 ? '1:1' : k1 > 0.5 ? '9:16' : '16:9';
+  Object.assign($('shapeK').style, { left: '0px', right: '0px', top: `${(SHAPE_CY - 26).toFixed(1)}px` });
+  setO($('shapeK'), grow);
+
+  // L
+  setO($('sL'), ramp(t, CUE.lIn - 0.2, CUE.lIn + 0.3));
+  ['lH1', 'lH2', 'lH3'].forEach((id, i) => setO($(id), ramp(t, CUE.lIn + 0.3 + i * 0.25, CUE.lIn + 0.9 + i * 0.25), 40));
+  setO($('lSub'), ramp(t, 24.8, 25.4), 20);            // on "free"
+  setO($('lUrl'), ramp(t, 27.9, 28.5), 10);            // on "GitHub"
+}
+
+window.DURATION = DURATION;
+window.FPS = FPS;
+window.CAPTIONS = CAPTIONS;
+window.POSTER_T = POSTER_T;
+window.SFX = SFX;
+window.ASPECTS = ASPECTS;
+window.render = render;
+const q = new URLSearchParams(location.search).get('t');
+if (q !== null) render(parseFloat(q));
+else { const t0 = performance.now(); (function loop() { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>

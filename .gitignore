@@ -10,3 +10,5 @@ node_modules/
 **/brand-tokens.resolved.json
 **/narration/*.verify.json
 _site/
+# A film folder may link node_modules from another example (a symlink, which node_modules/ does not match).
+examples/*/node_modules

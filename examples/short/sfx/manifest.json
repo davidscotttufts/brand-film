@@ -1,0 +1,28 @@
+{
+  "effects": {
+    "tick": {
+      "file": "sfx/tick.a0cc07bd4547.wav",
+      "gain": -26
+    },
+    "sweep": {
+      "file": "sfx/sweep.52fab35dae8a.wav",
+      "gain": -22
+    },
+    "chime": {
+      "file": "sfx/chime.eb91677f8d87.wav",
+      "gain": -17
+    },
+    "refuse": {
+      "file": "sfx/refuse.c9e7b6a4e796.wav",
+      "gain": -17
+    },
+    "wait": {
+      "file": "sfx/wait.108870f51197.wav",
+      "gain": -20
+    },
+    "pop": {
+      "file": "sfx/pop.a484324fc829.wav",
+      "gain": -20
+    }
+  }
+}

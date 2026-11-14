@@ -1,0 +1,8 @@
+{
+ "$comment": "The score, composed by ElevenLabs music (`npm run music`), instrumental, cached in music/. The default is no music (silence is the default; music only when it serves the film), so `use` starts false; a brand film that wants a score sets it true. render.mjs sets the score at `levelDb`, fades it in and out, and ducks it under the narrator. Make lengthMs about 1 s longer than the film's DURATION, and recompose whenever the length changes so it resolves on the end card.",
+ "use": false,
+ "model": "music_v2_5",
+ "lengthMs": 27000,
+ "levelDb": -10,
+ "prompt": "Warm, optimistic modern documentary underscore for a corporate technology story. A soft piano motif over gentle pulsing synth and light strings, around 96 BPM. Starts sparse and reflective, builds steadily with light percussion from the midpoint, and resolves with an uplifting, confident ending in the final 5 seconds. Instrumental only, no vocals, mixed to leave space for a narrator."
+}

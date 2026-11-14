@@ -1,0 +1,81 @@
+{
+ "$comment": "The voice-over: one take per scene. `text` is the line as WRITTEN (\"17 weeks\", \"example.com\"); the brand's pronunciation lexicon (brand-tokens.json brand.pronunciations) turns it into what the voice is sent, and the captions show the written forms. A take may instead give `speak`, sent exactly as written. Each take starts at `at` and must finish before `until`, in FILM seconds (after inserts). `scene` says what is on screen; `anchors` are words that should land while their picture shows (reported by npm run narrate, not enforced). `verify` sets the listening check (speech-to-text): the most word error a take may have and how many times to re-voice a take that fails. `timing` is 'tts' (the voice's own timestamps) or 'forced-alignment' (re-aligned against the text). The narrator comes from brand-tokens.json video.voice.narrator; `voice` here is only the fallback. `auditions` lists voices for npm run audition. Eleven v3/v4 reject a seed, so seed is null. `recording` (optional): a voice-over a person read, {\"file\": \"recordings/vo.m4a\", \"maxPause\": 0.3, \"speaker\": \"…\"}; npm run narrate then cuts each take out of it instead of voicing it (references/sound.md). A take's `chapter` (optional) names a chapter in out/<basename>.publish.json; `clips` (optional) names the clips.json footage it shows.",
+ "model": "eleven_v4",
+ "voice": {
+  "id": "",
+  "name": ""
+ },
+ "auditions": [],
+ "voiceSettings": {
+  "stability": 0.5,
+  "similarity_boost": 0.8
+ },
+ "outputFormat": "mp3_44100_128",
+ "seed": null,
+ "verify": {
+  "enabled": true,
+  "model": "scribe_v1",
+  "maxWer": 0.15,
+  "attempts": 3
+ },
+ "timing": "tts",
+ "captionReplace": {},
+ "takes": [
+  {
+   "id": "a-open",
+   "at": 0.4,
+   "until": 5,
+   "scene": "opening card: logo, Brand films, made in code.",
+   "text": "brand-film turns a story into a narrated film, in code."
+  },
+  {
+   "id": "b-scene",
+   "at": 5.4,
+   "until": 11,
+   "scene": "a code card types render(t); a frame counter shows the frame on screen",
+   "text": "What you see is one HTML scene, drawn frame by frame in headless Chrome.",
+   "anchors": [
+    {
+     "word": "frame",
+     "from": 7.5,
+     "to": 10.5
+    }
+   ]
+  },
+  {
+   "id": "c-voice",
+   "at": 11.7,
+   "until": 17.6,
+   "scene": "a waveform; brand-film, ElevenLabs and GitHub each get a check",
+   "text": "ElevenLabs voices every line, then listens back to check each name.",
+   "anchors": [
+    {
+     "word": "check",
+     "from": 14.5,
+     "to": 17
+    }
+   ]
+  },
+  {
+   "id": "d-shapes",
+   "at": 18.3,
+   "until": 23.8,
+   "scene": "one frame changes shape: 16:9, 9:16, 1:1",
+   "text": "The same scene renders wide, tall or square, with captions burned in.",
+   "anchors": [
+    {
+     "word": "tall",
+     "from": 19,
+     "to": 21.5
+    }
+   ]
+  },
+  {
+   "id": "l-end",
+   "at": 24.5,
+   "until": 29.3,
+   "scene": "paper end card: Get brand-film on GitHub, MIT, the URL",
+   "text": "It is free and open source. Find brand-film on GitHub."
+  }
+ ]
+}

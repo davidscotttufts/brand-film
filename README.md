@@ -13,7 +13,8 @@ poster and captions.
 
 ▶ **[Watch the example](https://davidscotttufts.github.io/brand-film/)**: 48
 seconds, made with brand-film, explaining brand-film. Its sources are in
-[`examples/how-it-works`](examples/how-it-works).
+[`examples/how-it-works`](examples/how-it-works); a 30-second vertical short
+with burned-in captions is in [`examples/short`](examples/short).
 
 ## Why another video skill
 
@@ -227,6 +228,7 @@ Films made with brand-film, or the pipeline it grew out of:
 |---|---|
 | `plugins/brand-film/skills/brand-film/` | the skill: `SKILL.md`, references, scripts, and the film template |
 | `examples/how-it-works/` | the example film's sources |
+| `examples/short/` | a 9:16 short's sources: burned-in captions, a web page as the source |
 | `tests/` | `npm test`: lexicon, listening check, lint, tokens, repository integrity |
 | `scripts/test-render.sh` | `npm run test:render`: a full silent render of the template and the example |
 
