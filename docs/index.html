@@ -34,6 +34,12 @@
   .langs button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
   .langs button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .note { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
+  .short { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 32px; align-items: start; margin-top: 56px; padding-top: 40px; border-top: 1px solid var(--rule); }
+  .short video { aspect-ratio: 9 / 16; max-width: 340px; }
+  .short h2 { font: 700 clamp(28px, 4vw, 40px)/1.05 "Space Grotesk", ui-sans-serif, sans-serif; letter-spacing: -0.02em; margin: 10px 0 12px; }
+  .short p { color: var(--muted); margin: 0 0 20px; }
+  .short .facts { margin: 0 0 24px; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  @media (max-width: 720px) { .short { grid-template-columns: 1fr; } .short video { margin: 0 auto; } }
   footer { margin-top: 48px; color: var(--muted); font-size: 14px; }
   a { color: var(--accent); }
 </style>
@@ -66,7 +72,27 @@
     <a href="https://github.com/davidscotttufts/brand-film/tree/main/examples/how-it-works">This film's sources</a>
     <a href="how-it-works.mp4" download>Download the MP4</a>
   </div>
-  <footer>Narration and score generated with ElevenLabs on a paid plan. Made with brand-film.</footer>
+  <section class="short" aria-labelledby="short-title">
+    <video controls preload="metadata" poster="short-poster.jpg" playsinline>
+      <source src="short.mp4" type="video/mp4">
+      Your browser can't play this video. <a href="short.mp4">Download the MP4</a>.
+    </video>
+    <div>
+      <div class="eyebrow">example short · 9:16</div>
+      <h2 id="short-title">The same idea, cut for a phone.</h2>
+      <p>Thirty seconds, vertical, with word-by-word captions burned into the picture for a muted feed. Its source was this site, read with <code>npm run source</code>, and its titles and description were written beside the film.</p>
+      <ul class="facts">
+        <li><b>900 frames</b><span>1080 × 1920, one HTML scene</span></li>
+        <li><b>5 of 5 takes</b><span>heard as written</span></li>
+        <li><b>64 of 64 words</b><span>found in the final mix</span></li>
+      </ul>
+      <div class="links">
+        <a href="https://github.com/davidscotttufts/brand-film/tree/main/examples/short">This short's sources</a>
+        <a href="short.mp4" download>Download the MP4</a>
+      </div>
+    </div>
+  </section>
+  <footer>Narration, and the long film's score, generated with ElevenLabs on a paid plan. Made with brand-film.</footer>
 </main>
 <script>
   // Swap the film for the chosen voice-over; the captions list stays the same.
